@@ -30,16 +30,16 @@ Optional fields:
 operately goals create_target \
   --goal-id g1 \
   --name "Monthly Recurring Revenue" \
-  --from 50000 \
-  --to 100000 \
+  --start-value 50000 \
+  --target-value 100000 \
   --unit "USD"
 
 # Create percentage target
 operately goals create_target \
   --goal-id g1 \
   --name "Customer Retention" \
-  --from 85 \
-  --to 95 \
+  --start-value 85 \
+  --target-value 95 \
   --unit "%"
 ```
 
@@ -67,6 +67,7 @@ operately goals update_target_value \
 operately goals close \
   --goal-id g1 \
   --success achieved \
+  --success-status achieved \
   --retrospective "# Q2 Revenue Goal Retrospective\n\n## Achievement\nReached $105,000 MRR (105% of target)\n\n## Key Drivers\n- New enterprise customers\n- Reduced churn\n- Upsells to existing customers"
 ```
 
@@ -130,7 +131,7 @@ operately goals update_parent_goal \
 ### Searching Parent Goals
 
 ```bash
-operately goals search_parent_goal --query "growth"
+operately goals search_parent_goal --query "growth" --goal-id g1
 ```
 
 ### Moving Goals Between Spaces
@@ -150,8 +151,8 @@ operately goals update_space \
 operately goals create_target \
   --goal-id g1 \
   --name "New Customers" \
-  --from 100 \
-  --to 500 \
+  --start-value 100 \
+  --target-value 500 \
   --unit "customers"
 ```
 
@@ -160,8 +161,8 @@ operately goals create_target \
 operately goals create_target \
   --goal-id g1 \
   --name "Revenue" \
-  --from 1000000 \
-  --to 2000000 \
+  --start-value 1000000 \
+  --target-value 2000000 \
   --unit "USD"
 ```
 
@@ -170,8 +171,8 @@ operately goals create_target \
 operately goals create_target \
   --goal-id g1 \
   --name "Market Share" \
-  --from 15 \
-  --to 25 \
+  --start-value 15 \
+  --target-value 25 \
   --unit "%"
 ```
 
@@ -180,10 +181,11 @@ operately goals create_target \
 ```bash
 # Update target definition
 operately goals update_target \
+  --goal-id g1 \
   --target-id t1 \
   --name "Updated Target Name" \
-  --from 100 \
-  --to 600 \
+  --start-value 100 \
+  --target-value 600 \
   --unit "customers"
 
 # Update current value
@@ -201,7 +203,7 @@ operately goals update_target_index \
 ### Deleting Targets
 
 ```bash
-operately goals delete_target --target-id t1
+operately goals delete_target --goal-id g1 --target-id t1
 ```
 
 ## Check-in Patterns
@@ -246,7 +248,7 @@ operately goals create_check_in \
 
 ```bash
 # Reviewer acknowledges check-in
-operately goals acknowledge_check_in --check-in-id ci1
+operately goals acknowledge_check_in --id ci1
 
 # List check-ins
 operately goals list_check_ins --goal-id g1
@@ -354,9 +356,9 @@ operately goals list_discussions --goal-id g1
 
 # Update discussion
 operately goals update_discussion \
-  --discussion-id d1 \
+  --activity-id d1 \
   --title "Updated Discussion Title" \
-  --body "# Updated Content"
+  --message "# Updated Content"
 ```
 
 ## Access Control
@@ -367,19 +369,22 @@ operately goals update_discussion \
 # Add access members
 operately goals create_access_members \
   --goal-id g1 \
-  --person-ids u1 \
-  --person-ids u2
+  --members.0.id u1 \
+  --members.0.access-level 70 \
+  --members.1.id u2 \
+  --members.1.access-level 40
 
 # List access members
 operately goals list_access_members --goal-id g1
 
 # Update access level
 operately goals update_access_member \
-  --access-member-id am1 \
+  --goal-id g1 \
+  --person-id u1 \
   --access-level 70
 
 # Remove access member
-operately goals delete_access_member --access-member-id am1
+operately goals delete_access_member --goal-id g1 --person-id u1
 ```
 
 ### Updating Access Levels
@@ -387,10 +392,9 @@ operately goals delete_access_member --access-member-id am1
 ```bash
 operately goals update_access_levels \
   --goal-id g1 \
-  --public false \
-  --anonymous-access-level 0 \
-  --company-access-level 10 \
-  --space-access-level 70
+  --access-levels.public 0 \
+  --access-levels.company 10 \
+  --access-levels.space 70
 ```
 
 Access levels:
@@ -420,18 +424,14 @@ Use cases:
 operately goals close \
   --goal-id g1 \
   --success achieved \
+  --success-status achieved \
   --retrospective "# Success!\n\nExceeded target by 15%."
-
-# Partially achieved
-operately goals close \
-  --goal-id g1 \
-  --success partially_achieved \
-  --retrospective "# Partial Success\n\nReached 80% of target."
 
 # Not achieved
 operately goals close \
   --goal-id g1 \
-  --success not_achieved \
+  --success no \
+  --success-status missed \
   --retrospective "# Lessons Learned\n\nMarket conditions changed significantly."
 ```
 

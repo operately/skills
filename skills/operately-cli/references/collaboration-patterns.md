@@ -19,7 +19,7 @@ operately spaces create \
 ### Getting Space Details
 
 ```bash
-operately spaces get --space-id s1
+operately spaces get --id s1
 ```
 
 ### Listing Spaces
@@ -38,7 +38,7 @@ operately spaces search --query "engineering"
 
 ```bash
 operately spaces update \
-  --space-id s1 \
+  --id s1 \
   --name "Engineering & Product" \
   --mission "Build and ship great products"
 ```
@@ -57,14 +57,18 @@ operately spaces delete --space-id s1
 # Add single member
 operately spaces add_members \
   --space-id s1 \
-  --member-ids u1
+  --members.0.id u1 \
+  --members.0.access-level 70
 
 # Add multiple members
 operately spaces add_members \
   --space-id s1 \
-  --member-ids u1 \
-  --member-ids u2 \
-  --member-ids u3
+  --members.0.id u1 \
+  --members.0.access-level 70 \
+  --members.1.id u2 \
+  --members.1.access-level 40 \
+  --members.2.id u3 \
+  --members.2.access-level 40
 ```
 
 ### Listing Members
@@ -77,7 +81,7 @@ operately spaces list_members --space-id s1
 
 ```bash
 operately spaces search_potential_members \
-  --space-id s1 \
+  --group-id s1 \
   --query "engineer"
 ```
 
@@ -103,9 +107,10 @@ operately spaces join --space-id s1
 ```bash
 operately spaces update_members_permissions \
   --space-id s1 \
-  --member-ids u1 \
-  --member-ids u2 \
-  --access-level 70
+  --members.0.id u1 \
+  --members.0.access-level 70 \
+  --members.1.id u2 \
+  --members.1.access-level 70
 ```
 
 Access levels:
@@ -120,10 +125,9 @@ Access levels:
 ```bash
 operately spaces update_permissions \
   --space-id s1 \
-  --public false \
-  --anonymous-access-level 0 \
-  --company-access-level 10 \
-  --space-access-level 70
+  --access-levels.public 0 \
+  --access-levels.company 10 \
+  --access-levels.space 70
 ```
 
 ## Space Tools
@@ -139,14 +143,9 @@ operately spaces list_tools --space-id s1
 ```bash
 operately spaces update_tools \
   --space-id s1 \
-  --tools.0.type "projects" \
-  --tools.0.enabled true \
-  --tools.1.type "goals" \
-  --tools.1.enabled true \
-  --tools.2.type "resource_hub" \
-  --tools.2.enabled true \
-  --tools.3.type "discussions" \
-  --tools.3.enabled true
+  --tools.tasks-enabled true \
+  --tools.discussions-enabled true \
+  --tools.resource-hub-enabled true
 ```
 
 Common tool types:
@@ -203,7 +202,7 @@ operately spaces publish_discussion --discussion-id d1
 operately projects create_discussion \
   --project-id p1 \
   --title "Architecture Decision: Database" \
-  --body "# Database Selection\n\n## Options\n1. PostgreSQL\n2. MongoDB\n\n## Recommendation\nPostgreSQL for ACID compliance."
+  --message "# Database Selection\n\n## Options\n1. PostgreSQL\n2. MongoDB\n\n## Recommendation\nPostgreSQL for ACID compliance."
 ```
 
 **List discussions:**
@@ -221,7 +220,7 @@ operately projects get_discussion --discussion-id d1
 operately projects update_discussion \
   --discussion-id d1 \
   --title "Decision Made: PostgreSQL" \
-  --body "# Final Decision\n\nWe chose PostgreSQL."
+  --message "# Final Decision\n\nWe chose PostgreSQL."
 ```
 
 ### Goal Discussions
@@ -242,9 +241,9 @@ operately goals list_discussions --goal-id g1
 **Update discussion:**
 ```bash
 operately goals update_discussion \
-  --discussion-id d1 \
+  --activity-id d1 \
   --title "Target Revised" \
-  --body "# Decision\n\nRevised target from $100K to $75K."
+  --message "# Decision\n\nRevised target from $100K to $75K."
 ```
 
 ## Comments
@@ -298,13 +297,14 @@ operately comments list \
 ```bash
 operately comments update \
   --comment-id c1 \
+  --parent-type project_check_in \
   --content "Updated comment with more details."
 ```
 
 ### Deleting Comments
 
 ```bash
-operately comments delete --comment-id c1
+operately comments delete --comment-id c1 --parent-type project_check_in
 ```
 
 ## Reactions
@@ -320,8 +320,9 @@ operately reactions create \
 
 # Heart
 operately reactions create \
-  --entity-id d1 \
-  --entity-type "document" \
+  --entity-id c1 \
+  --entity-type "comment" \
+  --parent-type "project_check_in" \
   --emoji "❤️"
 
 # Celebrate
@@ -351,17 +352,34 @@ operately notifications list
 operately notifications get_unread_count
 ```
 
+### Managing Subscriptions
+
+```bash
+# Check subscription
+operately notifications is_subscribed \
+  --resource-id p1 \
+  --resource-type "project"
+
+# Subscribe to resource
+operately notifications subscribe \
+  --id p1 \
+  --type "project"
+
+# Unsubscribe from subscription list
+operately notifications unsubscribe --id sub1
+```
+
 ### Marking as Read
 
 ```bash
 # Mark single notification
-operately notifications mark_as_read --notification-id n1
+operately notifications mark_as_read --id n1
 
 # Mark multiple notifications
 operately notifications mark_many_as_read \
-  --notification-ids n1 \
-  --notification-ids n2 \
-  --notification-ids n3
+  --ids n1 \
+  --ids n2 \
+  --ids n3
 
 # Mark all as read
 operately notifications mark_all_as_read
@@ -463,31 +481,32 @@ operately spaces create \
 # 2. Add team members
 operately spaces add_members \
   --space-id s1 \
-  --member-ids u1 \
-  --member-ids u2 \
-  --member-ids u3
+  --members.0.id u1 \
+  --members.0.access-level 100 \
+  --members.1.id u2 \
+  --members.1.access-level 70 \
+  --members.2.id u3 \
+  --members.2.access-level 70
 
 # 3. Set permissions
 operately spaces update_members_permissions \
   --space-id s1 \
-  --member-ids u1 \
-  --access-level 100  # Team lead - full access
+  --members.0.id u1 \
+  --members.0.access-level 100  # Team lead - full access
 
 operately spaces update_members_permissions \
   --space-id s1 \
-  --member-ids u2 \
-  --member-ids u3 \
-  --access-level 70  # Team members - edit access
+  --members.0.id u2 \
+  --members.0.access-level 70 \
+  --members.1.id u3 \
+  --members.1.access-level 70  # Team members - edit access
 
 # 4. Enable tools
 operately spaces update_tools \
   --space-id s1 \
-  --tools.0.type "projects" \
-  --tools.0.enabled true \
-  --tools.1.type "goals" \
-  --tools.1.enabled true \
-  --tools.2.type "resource_hub" \
-  --tools.2.enabled true
+  --tools.tasks-enabled true \
+  --tools.discussions-enabled true \
+  --tools.resource-hub-enabled true
 
 # 5. Create resource hub
 operately resource_hubs create \
@@ -517,23 +536,29 @@ operately projects create \
 operately projects create_contributor \
   --project-id p1 \
   --person-id eng_lead \
-  --responsibility "Engineering Lead"
+  --responsibility "Engineering Lead" \
+  --permissions edit_access \
+  --role contributor
 
 operately projects create_contributor \
   --project-id p1 \
   --person-id design_lead \
-  --responsibility "Design Lead"
+  --responsibility "Design Lead" \
+  --permissions edit_access \
+  --role contributor
 
 operately projects create_contributor \
   --project-id p1 \
   --person-id marketing_lead \
-  --responsibility "Marketing Lead"
+  --responsibility "Marketing Lead" \
+  --permissions edit_access \
+  --role contributor
 
 # 3. Create discussion for alignment
 operately projects create_discussion \
   --project-id p1 \
   --title "Launch Timeline Discussion" \
-  --body "# Timeline\n\nLet's align on the launch date and key milestones."
+  --message "# Timeline\n\nLet's align on the launch date and key milestones."
 ```
 
 ## Gotchas

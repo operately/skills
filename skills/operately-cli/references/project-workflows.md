@@ -50,17 +50,23 @@ operately projects create_milestone \
 operately projects create_contributor \
   --project-id p1 \
   --person-id u3 \
-  --responsibility "Lead Designer"
+  --responsibility "Lead Designer" \
+  --permissions edit_access \
+  --role reviewer
 
 operately projects create_contributor \
   --project-id p1 \
   --person-id u4 \
-  --responsibility "Backend Engineer"
+  --responsibility "Backend Engineer" \
+  --permissions edit_access \
+  --role contributor
 
 operately projects create_contributor \
   --project-id p1 \
   --person-id u5 \
-  --responsibility "QA Lead"
+  --responsibility "QA Lead" \
+  --permissions edit_access \
+  --role contributor
 ```
 
 ### 4. Create Tasks
@@ -68,18 +74,24 @@ operately projects create_contributor \
 ```bash
 # Create tasks for milestones
 operately tasks create \
+  --type project \
+  --id p1 \
   --name "Create wireframes" \
   --milestone-id m1 \
   --assignee-id u3 \
   --due-date 2024-05-10
 
 operately tasks create \
+  --type project \
+  --id p1 \
   --name "Design mockups" \
   --milestone-id m1 \
   --assignee-id u3 \
   --due-date 2024-05-15
 
 operately tasks create \
+  --type project \
+  --id p1 \
   --name "API development" \
   --milestone-id m2 \
   --assignee-id u4 \
@@ -111,8 +123,8 @@ operately projects update_milestone_due_date \
   --due-date 2024-06-18
 
 # Update task status
-operately tasks update_status --task-id t1 --status-id completed
-operately tasks update_status --task-id t2 --status-id in_progress
+operately tasks update_status --task-id t1 --type project --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
+operately tasks update_status --task-id t2 --type project --status.id in_progress --status.label "In Progress" --status.color blue --status.index 1 --status.value in_progress --status.closed false
 ```
 
 ### 7. Close Project
@@ -120,7 +132,8 @@ operately tasks update_status --task-id t2 --status-id in_progress
 ```bash
 operately projects close \
   --project-id p1 \
-  --retrospective "# Project Retrospective\n\n## What Went Well\n- Strong team collaboration\n- Clear milestones\n\n## What Could Improve\n- Earlier infrastructure planning\n- More frequent stakeholder updates"
+  --retrospective "# Project Retrospective\n\n## What Went Well\n- Strong team collaboration\n- Clear milestones\n\n## What Could Improve\n- Earlier infrastructure planning\n- More frequent stakeholder updates" \
+  --success-status achieved
 ```
 
 ## Milestone Management Patterns
@@ -179,14 +192,22 @@ operately projects list_milestone_tasks --milestone-id m1
 operately projects create_contributor \
   --project-id p1 \
   --person-id u1 \
-  --responsibility "Technical Lead"
+  --responsibility "Technical Lead" \
+  --permissions edit_access \
+  --role reviewer
 
 # Multiple contributors
 operately projects create_contributors \
   --project-id p1 \
-  --person-ids u2 \
-  --person-ids u3 \
-  --person-ids u4
+  --contributors.0.person-id u2 \
+  --contributors.0.responsibility "Product Lead" \
+  --contributors.0.access-level edit_access \
+  --contributors.1.person-id u3 \
+  --contributors.1.responsibility "Engineering Lead" \
+  --contributors.1.access-level edit_access \
+  --contributors.2.person-id u4 \
+  --contributors.2.responsibility "Designer" \
+  --contributors.2.access-level comment_access
 ```
 
 ### Managing Contributors
@@ -200,11 +221,11 @@ operately projects get_contributor --contributor-id c1
 
 # Update responsibility
 operately projects update_contributor \
-  --contributor-id c1 \
+  --contrib-id c1 \
   --responsibility "Lead Engineer & Architecture Owner"
 
 # Remove contributor
-operately projects delete_contributor --contributor-id c1
+operately projects delete_contributor --contrib-id c1
 ```
 
 ### Searching for Contributors
@@ -224,14 +245,14 @@ operately projects search_potential_contributors \
 operately projects create_key_resource \
   --project-id p1 \
   --title "Technical Design" \
-  --url "https://docs.example.com/design" \
+  --link "https://docs.example.com/design" \
   --resource-type "document"
 
 # Add Figma link
 operately projects create_key_resource \
   --project-id p1 \
   --title "Design Mockups" \
-  --url "https://figma.com/file/abc123" \
+  --link "https://figma.com/file/abc123" \
   --resource-type "design"
 ```
 
@@ -239,16 +260,16 @@ operately projects create_key_resource \
 
 ```bash
 # Get resource
-operately projects get_key_resource --key-resource-id kr1
+operately projects get_key_resource --id kr1
 
 # Update resource
 operately projects update_key_resource \
-  --key-resource-id kr1 \
+  --id kr1 \
   --title "Updated Design Doc" \
   --url "https://docs.example.com/design-v2"
 
 # Delete resource
-operately projects delete_key_resource --key-resource-id kr1
+operately projects delete_key_resource --id kr1
 ```
 
 ## Project Discussions
@@ -259,7 +280,7 @@ operately projects delete_key_resource --key-resource-id kr1
 operately projects create_discussion \
   --project-id p1 \
   --title "Architecture Decision: Database Choice" \
-  --body "# Database Selection\n\n## Options\n1. PostgreSQL\n2. MongoDB\n\n## Recommendation\nPostgreSQL for ACID compliance."
+  --message "# Database Selection\n\n## Options\n1. PostgreSQL\n2. MongoDB\n\n## Recommendation\nPostgreSQL for ACID compliance."
 ```
 
 ### Managing Discussions
@@ -275,7 +296,7 @@ operately projects get_discussion --discussion-id d1
 operately projects update_discussion \
   --discussion-id d1 \
   --title "Updated: Database Decision" \
-  --body "# Final Decision\n\nWe chose PostgreSQL."
+  --message "# Final Decision\n\nWe chose PostgreSQL."
 ```
 
 ## Check-in Patterns
@@ -311,7 +332,7 @@ operately projects create_check_in \
 
 ```bash
 # Reviewer acknowledges check-in
-operately projects acknowledge_check_in --check-in-id ci1
+operately projects acknowledge_check_in --id ci1
 
 # List check-ins
 operately projects list_check_ins --project-id p1
@@ -326,8 +347,9 @@ operately projects get_check_in --check-in-id ci1
 
 ```bash
 operately projects update_retrospective \
-  --project-id p1 \
-  --retrospective "# Q2 Roadmap Retrospective\n\n## What Went Well\n- Clear milestones and deliverables\n- Strong team collaboration\n- Regular check-ins kept everyone aligned\n\n## What Could Improve\n- Earlier infrastructure planning\n- More buffer time for QA\n- Better stakeholder communication\n\n## Action Items\n- Document infrastructure requirements upfront\n- Add 20% buffer to estimates\n- Weekly stakeholder updates"
+  --id p1 \
+  --content "# Q2 Roadmap Retrospective\n\n## What Went Well\n- Clear milestones and deliverables\n- Strong team collaboration\n- Regular check-ins kept everyone aligned\n\n## What Could Improve\n- Earlier infrastructure planning\n- More buffer time for QA\n- Better stakeholder communication\n\n## Action Items\n- Document infrastructure requirements upfront\n- Add 20% buffer to estimates\n- Weekly stakeholder updates" \
+  --success-status achieved
 ```
 
 ### Getting Retrospective

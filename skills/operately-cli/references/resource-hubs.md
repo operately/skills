@@ -61,7 +61,7 @@ Access levels:
 ### Getting Resource Hub
 
 ```bash
-operately resource_hubs get --resource-hub-id rh1
+operately resource_hubs get --id rh1
 ```
 
 ## Folder Organization
@@ -107,14 +107,14 @@ operately resource_hubs create_folder \
 
 **Get folder details:**
 ```bash
-operately resource_hubs get_folder --folder-id f1
+operately resource_hubs get_folder --id f1
 ```
 
 **Rename folder:**
 ```bash
 operately resource_hubs rename_folder \
   --folder-id f1 \
-  --name "Team Guides"
+  --new-name "Team Guides"
 ```
 
 **Delete folder:**
@@ -126,7 +126,8 @@ operately resource_hubs delete_folder --folder-id f1
 ```bash
 operately resource_hubs copy_folder \
   --folder-id f1 \
-  --new-parent-folder-id f2
+  --dest-resource-hub-id rh1 \
+  --dest-parent-folder-id f2
 ```
 
 ## Documents
@@ -184,7 +185,7 @@ operately documents create \
 
 **Get document:**
 ```bash
-operately documents get --document-id d1
+operately documents get --id d1
 ```
 
 **Update document:**
@@ -244,7 +245,7 @@ operately links create \
 
 **Get link:**
 ```bash
-operately links get --link-id l1
+operately links get --id l1
 ```
 
 **Update link:**
@@ -252,6 +253,7 @@ operately links get --link-id l1
 operately links update \
   --link-id l1 \
   --name "Updated Link Title" \
+  --type "external" \
   --url "https://new-url.example.com" \
   --description "Updated description"
 ```

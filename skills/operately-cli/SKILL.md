@@ -88,7 +88,7 @@ Three ways to provide authentication:
 
 3. **Per-command flags** (temporary overrides):
    ```bash
-   operately get_me --token <token> --base-url <url>
+   operately people get_me --token <token> --base-url <url>
    ```
 
 Priority: command flags > environment variables > saved profile.
@@ -126,7 +126,7 @@ Examples:
 operately people get_me
 operately projects list
 operately goals create --name "Q2 Revenue Goal" --space-id s1
-operately tasks update_status --task-id t1 --status-id completed
+operately tasks update_status --task-id t1 --type project --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
 ```
 
 ### 3. Input Flags
@@ -140,8 +140,8 @@ operately projects update_name --project-id p1 --name "New Name"
 
 **Booleans:**
 ```bash
-operately projects get --project-id p1 --include-space
-operately projects get --project-id p1 --include-space=true
+operately projects get --id p1 --include-space
+operately projects get --id p1 --include-space=true
 ```
 
 **Nulls:**
@@ -151,7 +151,7 @@ operately goals update_due_date --goal-id g1 --due-date null
 
 **Arrays** (repeat the flag):
 ```bash
-operately notifications subscribe --subscriber-ids id1 --subscriber-ids id2
+operately notifications mark_many_as_read --ids n1 --ids n2
 ```
 
 **Nested objects** (dot-index notation):
@@ -316,7 +316,7 @@ operately projects create_check_in \
 operately projects list_check_ins --project-id p1
 
 # Acknowledge check-in
-operately projects acknowledge_check_in --check-in-id ci1
+operately projects acknowledge_check_in --id ci1
 ```
 
 ### Contributors
@@ -326,14 +326,16 @@ operately projects acknowledge_check_in --check-in-id ci1
 operately projects create_contributor \
   --project-id p1 \
   --person-id u1 \
-  --responsibility "Design lead"
+  --responsibility "Design lead" \
+  --permissions edit_access \
+  --role reviewer
 
 # List contributors
 operately projects list_contributors --project-id p1
 
 # Update contributor
 operately projects update_contributor \
-  --contributor-id c1 \
+  --contrib-id c1 \
   --responsibility "Lead designer and UX researcher"
 ```
 
@@ -370,7 +372,7 @@ operately goals update_parent_goal \
   --parent-goal-id g1
 
 # Search for parent goals
-operately goals search_parent_goal --query "Revenue"
+operately goals search_parent_goal --query "Revenue" --goal-id g1
 ```
 
 ### Targets
@@ -380,8 +382,8 @@ operately goals search_parent_goal --query "Revenue"
 operately goals create_target \
   --goal-id g1 \
   --name "Monthly Revenue" \
-  --from 50000 \
-  --to 100000 \
+  --start-value 50000 \
+  --target-value 100000 \
   --unit "USD"
 
 # Update target value
@@ -404,7 +406,7 @@ operately goals create_check_in \
 operately goals list_check_ins --goal-id g1
 
 # Acknowledge check-in
-operately goals acknowledge_check_in --check-in-id ci1
+operately goals acknowledge_check_in --id ci1
 ```
 
 ### Goal Lifecycle
@@ -414,10 +416,11 @@ operately goals acknowledge_check_in --check-in-id ci1
 operately goals close \
   --goal-id g1 \
   --success achieved \
+  --success-status achieved \
   --retrospective "# Retrospective\n\nWe exceeded our target."
 
 # Reopen goal
-operately goals reopen --goal-id g1
+operately goals reopen --id g1 --message "Reopening after new planning input."
 ```
 
 ## Tasks
@@ -446,17 +449,18 @@ operately tasks list --project-id p1
 
 ```bash
 # Update status
-operately tasks update_status --task-id t1 --status-id completed
+operately tasks update_status --task-id t1 --type project --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
 
 # Update assignee
-operately tasks update_assignee --task-id t1 --assignee-id u2
+operately tasks update_assignee --task-id t1 --type project --assignee-id u2
 
 # Update due date
-operately tasks update_due_date --task-id t1 --due-date 2024-06-20
+operately tasks update_due_date --task-id t1 --type project --due-date 2024-06-20
 
 # Update description
 operately tasks update_description \
   --task-id t1 \
+  --type project \
   --description "# Task Details\n\nCreate high-fidelity mockups."
 ```
 
@@ -470,7 +474,8 @@ operately tasks update_milestone --task-id t1 --milestone-id m2
 operately tasks update_milestone_and_ordering \
   --task-id t1 \
   --milestone-id m2 \
-  --new-position 0
+  --milestones-ordering-state.0.milestone-id m2 \
+  --milestones-ordering-state.0.ordering-state.0 t1
 ```
 
 ## Spaces
@@ -491,8 +496,10 @@ operately spaces create \
 # Add members
 operately spaces add_members \
   --space-id s1 \
-  --member-ids u1 \
-  --member-ids u2
+  --members.0.id u1 \
+  --members.0.access-level 70 \
+  --members.1.id u2 \
+  --members.1.access-level 40
 
 # List members
 operately spaces list_members --space-id s1
@@ -503,8 +510,8 @@ operately spaces delete_member --space-id s1 --member-id u1
 # Update permissions
 operately spaces update_members_permissions \
   --space-id s1 \
-  --member-ids u1 \
-  --access-level 70
+  --members.0.id u1 \
+  --members.0.access-level 70
 ```
 
 ### Space Tools
@@ -516,10 +523,9 @@ operately spaces list_tools --space-id s1
 # Update enabled tools
 operately spaces update_tools \
   --space-id s1 \
-  --tools.0.type "projects" \
-  --tools.0.enabled true \
-  --tools.1.type "goals" \
-  --tools.1.enabled true
+  --tools.tasks-enabled true \
+  --tools.discussions-enabled true \
+  --tools.resource-hub-enabled true
 ```
 
 ## Resource Hubs
@@ -552,7 +558,7 @@ operately resource_hubs create_folder \
 # Rename folder
 operately resource_hubs rename_folder \
   --folder-id f1 \
-  --name "Team Guides"
+  --new-name "Team Guides"
 
 # Move folder
 operately resource_hubs update_parent_folder \
@@ -638,7 +644,7 @@ operately spaces create_discussion \
 operately projects create_discussion \
   --project-id p1 \
   --title "Architecture Review" \
-  --body "# Architecture\n\nProposed changes..."
+  --message "# Architecture\n\nProposed changes..."
 
 # Goal discussion
 operately goals create_discussion \
@@ -668,10 +674,10 @@ operately comments create \
 operately comments list --entity-id e1 --entity-type "project_check_in"
 
 # Update comment
-operately comments update --comment-id c1 --content "Updated comment"
+operately comments update --comment-id c1 --parent-type project_check_in --content "Updated comment"
 
 # Delete comment
-operately comments delete --comment-id c1
+operately comments delete --comment-id c1 --parent-type project_check_in
 ```
 
 ## Notifications
@@ -684,16 +690,28 @@ operately notifications list
 operately notifications get_unread_count
 
 # Mark as read
-operately notifications mark_as_read --notification-id n1
+operately notifications mark_as_read --id n1
+
+# Mark many as read
+operately notifications mark_many_as_read \
+  --ids n1 \
+  --ids n2
 
 # Mark all as read
 operately notifications mark_all_as_read
 
+# Check subscription
+operately notifications is_subscribed \
+  --resource-id r1 \
+  --resource-type "project"
+
 # Subscribe to resource
 operately notifications subscribe \
-  --resource-id r1 \
-  --resource-type "project" \
-  --subscriber-ids u1
+  --id r1 \
+  --type "project"
+
+# Unsubscribe from subscription list
+operately notifications unsubscribe --id sub1
 ```
 
 ## People
@@ -703,7 +721,7 @@ operately notifications subscribe \
 operately people get_me
 
 # Get user by ID
-operately people get --person-id u1
+operately people get --id u1
 
 # List people
 operately people list
@@ -713,7 +731,7 @@ operately people search --query "john"
 
 # Update profile
 operately people update \
-  --person-id u1 \
+  --id u1 \
   --title "Senior Engineer" \
   --manager-id u2
 ```
@@ -788,14 +806,14 @@ npm list -g @operately/operately-cli
 Update to latest version:
 ```bash
 npm update -g @operately/operately-cli
-operately version
+operately --version
 ```
 
 ### API Errors
 
 Use verbose mode to see request details:
 ```bash
-operately projects get --project-id p1 --verbose
+operately projects get --id p1 --verbose
 ```
 
 Check the API response for specific error messages.

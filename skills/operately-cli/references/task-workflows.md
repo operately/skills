@@ -32,7 +32,11 @@ operately tasks create \
   --name "Write API documentation" \
   --milestone-id m1 \
   --assignee-id u2 \
-  --due-date null \
+  --due-date null
+
+operately tasks update_description \
+  --task-id t3 \
+  --type project \
   --description "# API Documentation\n\n## Endpoints to Document\n- /api/users\n- /api/projects\n- /api/goals"
 ```
 
@@ -62,18 +66,22 @@ operately spaces list_tasks --space-id s1
 # Assign to user
 operately tasks update_assignee \
   --task-id t1 \
+  --type project \
   --assignee-id u1
 
 # Unassign (set to null)
 operately tasks update_assignee \
   --task-id t1 \
+  --type project \
   --assignee-id null
 ```
 
 ### Finding Potential Assignees
 
 ```bash
-operately tasks list_potential_assignees --task-id t1
+operately tasks list_potential_assignees \
+  --id t1 \
+  --type project
 ```
 
 ## Status Management
@@ -84,17 +92,35 @@ operately tasks list_potential_assignees --task-id t1
 # Mark as in progress
 operately tasks update_status \
   --task-id t1 \
-  --status-id in_progress
+  --type project \
+  --status.id in_progress \
+  --status.label "In Progress" \
+  --status.color blue \
+  --status.index 1 \
+  --status.value in_progress \
+  --status.closed false
 
 # Mark as completed
 operately tasks update_status \
   --task-id t1 \
-  --status-id completed
+  --type project \
+  --status.id done \
+  --status.label "Done" \
+  --status.color green \
+  --status.index 2 \
+  --status.value done \
+  --status.closed true
 
 # Mark as blocked
 operately tasks update_status \
   --task-id t1 \
-  --status-id blocked
+  --type project \
+  --status.id blocked \
+  --status.label "Blocked" \
+  --status.color red \
+  --status.index 3 \
+  --status.value blocked \
+  --status.closed false
 ```
 
 ### Custom Status Workflows
@@ -129,6 +155,7 @@ operately projects update_task_statuses \
 ```bash
 operately tasks update_name \
   --task-id t1 \
+  --type project \
   --name "Updated task name"
 ```
 
@@ -137,6 +164,7 @@ operately tasks update_name \
 ```bash
 operately tasks update_description \
   --task-id t1 \
+  --type project \
   --description "# Updated Description\n\n## Details\nAdditional context and requirements."
 ```
 
@@ -146,11 +174,13 @@ operately tasks update_description \
 # Set due date
 operately tasks update_due_date \
   --task-id t1 \
+  --type project \
   --due-date 2024-06-20
 
 # Remove due date
 operately tasks update_due_date \
   --task-id t1 \
+  --type project \
   --due-date null
 ```
 
@@ -168,7 +198,8 @@ operately tasks update_milestone \
 operately tasks update_milestone_and_ordering \
   --task-id t1 \
   --milestone-id m2 \
-  --new-position 0
+  --milestones-ordering-state.0.milestone-id m2 \
+  --milestones-ordering-state.0.ordering-state.0 t1
 ```
 
 ### General Task Movement
@@ -176,13 +207,14 @@ operately tasks update_milestone_and_ordering \
 ```bash
 operately tasks move \
   --task-id t1 \
-  --new-milestone-id m2
+  --destination-type project \
+  --destination-id p2
 ```
 
 ### Deleting Tasks
 
 ```bash
-operately tasks delete --task-id t1
+operately tasks delete --task-id t1 --type project
 ```
 
 ## Task Patterns
@@ -198,27 +230,37 @@ operately projects create_milestone \
 
 # 2. Create sprint backlog
 operately tasks create \
+  --type project \
+  --id p1 \
   --name "User story: Login with SSO" \
   --milestone-id m5 \
-  --assignee-id u1 \
+  --assignee-id u1
+
+operately tasks update_description \
+  --task-id t1 \
+  --type project \
   --description "# User Story\n\nAs a user, I want to login with SSO so that I don't need another password.\n\n## Acceptance Criteria\n- Google OAuth integration\n- Microsoft OAuth integration\n- Fallback to email/password"
 
 operately tasks create \
+  --type project \
+  --id p1 \
   --name "User story: Dashboard widgets" \
   --milestone-id m5 \
   --assignee-id u2
 
 operately tasks create \
+  --type project \
+  --id p1 \
   --name "Bug: Fix pagination" \
   --milestone-id m5 \
   --assignee-id u3
 
 # 3. Daily updates
-operately tasks update_status --task-id t1 --status-id in_progress
-operately tasks update_status --task-id t2 --status-id completed
+operately tasks update_status --task-id t1 --type project --status.id in_progress --status.label "In Progress" --status.color blue --status.index 1 --status.value in_progress --status.closed false
+operately tasks update_status --task-id t2 --type project --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
 
 # 4. Sprint end
-operately tasks update_status --task-id t3 --status-id completed
+operately tasks update_status --task-id t3 --type project --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
 ```
 
 ### Kanban Board Pattern
@@ -234,15 +276,15 @@ operately projects update_task_statuses \
   --task-statuses.4.label "Done"
 
 # 2. Create tasks in backlog
-operately tasks create --name "Feature A" --milestone-id m1
-operately tasks create --name "Feature B" --milestone-id m1
-operately tasks create --name "Feature C" --milestone-id m1
+operately tasks create --type project --id p1 --name "Feature A" --milestone-id m1
+operately tasks create --type project --id p1 --name "Feature B" --milestone-id m1
+operately tasks create --type project --id p1 --name "Feature C" --milestone-id m1
 
 # 3. Move through workflow
-operately tasks update_status --task-id t1 --status-id ready
-operately tasks update_status --task-id t1 --status-id in_progress
-operately tasks update_status --task-id t1 --status-id review
-operately tasks update_status --task-id t1 --status-id done
+operately tasks update_status --task-id t1 --type project --status.id ready --status.label "Ready" --status.color blue --status.index 1 --status.value ready --status.closed false
+operately tasks update_status --task-id t1 --type project --status.id in_progress --status.label "In Progress" --status.color blue --status.index 2 --status.value in_progress --status.closed false
+operately tasks update_status --task-id t1 --type project --status.id review --status.label "Review" --status.color yellow --status.index 3 --status.value review --status.closed false
+operately tasks update_status --task-id t1 --type project --status.id done --status.label "Done" --status.color green --status.index 4 --status.value done --status.closed true
 ```
 
 ### Bug Tracking Pattern
@@ -250,20 +292,27 @@ operately tasks update_status --task-id t1 --status-id done
 ```bash
 # 1. Create bug tasks
 operately tasks create \
+  --type project \
+  --id p1 \
   --name "Bug: Login fails on Safari" \
-  --milestone-id bugs_milestone \
+  --milestone-id bugs_milestone
+
+operately tasks update_description \
+  --task-id t1 \
+  --type project \
   --description "# Bug Report\n\n## Steps to Reproduce\n1. Open Safari\n2. Go to login page\n3. Enter credentials\n4. Click login\n\n## Expected\nUser logs in\n\n## Actual\nError message appears\n\n## Priority\nHigh"
 
 # 2. Assign to developer
-operately tasks update_assignee --task-id t1 --assignee-id u1
+operately tasks update_assignee --task-id t1 --type project --assignee-id u1
 
 # 3. Track progress
-operately tasks update_status --task-id t1 --status-id in_progress
+operately tasks update_status --task-id t1 --type project --status.id in_progress --status.label "In Progress" --status.color blue --status.index 1 --status.value in_progress --status.closed false
 
 # 4. Mark as fixed
-operately tasks update_status --task-id t1 --status-id completed
+operately tasks update_status --task-id t1 --type project --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
 operately tasks update_description \
   --task-id t1 \
+  --type project \
   --description "# Bug Report\n\n[original description]\n\n## Resolution\nFixed Safari-specific cookie handling issue. Deployed in v1.2.3."
 ```
 
@@ -306,10 +355,10 @@ operately tasks list --project-id p1 --compact | jq '.[] | select(.status == "in
 
 ```bash
 # Get user's assignments
-operately people list_assignments --person-id u1
+operately people list_assignments
 
 # Get assignment count
-operately people get_assignments_count --person-id u1
+operately people get_assignments_count
 ```
 
 ## Gotchas
@@ -342,7 +391,13 @@ Use markdown for rich task descriptions:
 
 ```bash
 operately tasks create \
+  --type project \
+  --id p1 \
   --name "Complex feature" \
-  --milestone-id m1 \
+  --milestone-id m1
+
+operately tasks update_description \
+  --task-id t1 \
+  --type project \
   --description "# Feature: Advanced Search\n\n## Requirements\n- Full-text search\n- Filters by date, author, type\n- Sort options\n\n## Technical Notes\n- Use Elasticsearch\n- Index updates via queue\n\n## Acceptance Criteria\n- [ ] Search returns relevant results\n- [ ] Filters work correctly\n- [ ] Performance < 200ms"
 ```
