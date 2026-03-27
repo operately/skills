@@ -22,7 +22,6 @@ Operate an Operately instance through the `operately` CLI.
 | List tasks | `operately tasks list --project-id <id>` |
 | Create task | `operately tasks create --type project --id <project-id> --name "Design mockups" --milestone-id <id> --assignee-id null --due-date <date>` |
 | List spaces | `operately spaces list` |
-| Create resource hub | `operately resource_hubs create --space-id <id> --name "Team Docs"` |
 | Create document | `operately documents create --resource-hub-id <id> --name "Guide" --content "# Guide"` |
 | List hub contents | `operately resource_hubs list_nodes --resource-hub-id <id>` |
 
@@ -532,14 +531,15 @@ operately spaces update_tools \
 
 See [Resource Hubs Reference](references/resource-hubs.md) for detailed workflows.
 
-### Create Resource Hub
+### Find Resource Hub ID
+
+Every space already has a resource hub. To find the resource hub ID for a space:
 
 ```bash
-operately resource_hubs create \
-  --space-id s1 \
-  --name "Team Documentation" \
-  --description "# Team Docs\n\nCentral knowledge base."
+operately spaces list_tools --space-id s1
 ```
+
+Use the returned resource hub ID with `documents`, `links`, and `resource_hubs`.
 
 ### Folder Management
 

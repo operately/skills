@@ -508,10 +508,8 @@ operately spaces update_tools \
   --tools.discussions-enabled true \
   --tools.resource-hub-enabled true
 
-# 5. Create resource hub
-operately resource_hubs create \
-  --space-id s1 \
-  --name "Team Documentation"
+# 5. Find the space's resource hub ID
+operately spaces list_tools --space-id s1
 
 # 6. Create welcome discussion
 operately spaces create_discussion \

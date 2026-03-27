@@ -14,49 +14,21 @@ A resource hub is a structured knowledge base that belongs to a space. It provid
 - Access control
 
 **Key Characteristics:**
-- One resource hub per space
+- Every space has one resource hub
 - Nested folder hierarchy (unlimited depth)
 - Documents and links can be organized in folders
 - Markdown support for documents
 - Access levels inherited from space or customized
 
-## Creating Resource Hubs
+## Finding a Space's Resource Hub
 
-### Basic Resource Hub
-
-```bash
-operately resource_hubs create \
-  --space-id s1 \
-  --name "Team Documentation"
-```
-
-### Resource Hub with Description
+Every space already has a resource hub. To find the resource hub ID for a space:
 
 ```bash
-operately resource_hubs create \
-  --space-id s1 \
-  --name "Engineering Knowledge Base" \
-  --description "# Engineering Docs\n\nCentral repository for all engineering documentation, guides, and resources."
+operately spaces list_tools --space-id s1
 ```
 
-### Resource Hub with Access Control
-
-```bash
-operately resource_hubs create \
-  --space-id s1 \
-  --name "Leadership Documents" \
-  --description "# Leadership Resources" \
-  --anonymous-access-level 0 \
-  --company-access-level 10 \
-  --space-access-level 70
-```
-
-Access levels:
-- `0` - No access
-- `10` - View only
-- `40` - Comment
-- `70` - Edit
-- `100` - Full access
+Use the returned resource hub ID below as `rh1`.
 
 ### Getting Resource Hub
 
@@ -330,10 +302,9 @@ operately resource_hubs list_nodes \
 ### Team Knowledge Base Pattern
 
 ```bash
-# 1. Create resource hub
-operately resource_hubs create \
-  --space-id engineering_space \
-  --name "Engineering Knowledge Base"
+# 1. Find the space's resource hub ID
+operately spaces list_tools --space-id engineering_space
+# Use the returned resource hub ID below as rh1
 
 # 2. Create folder structure
 operately resource_hubs create_folder \
@@ -384,10 +355,9 @@ operately links create \
 ### Project Documentation Pattern
 
 ```bash
-# 1. Create resource hub for project
-operately resource_hubs create \
-  --space-id product_space \
-  --name "Q2 Roadmap Resources"
+# 1. Find the space's resource hub ID
+operately spaces list_tools --space-id product_space
+# Use the returned resource hub ID below as rh1
 
 # 2. Create project phases as folders
 operately resource_hubs create_folder \
@@ -424,10 +394,9 @@ operately links create \
 ### Policy & Procedures Pattern
 
 ```bash
-# 1. Create resource hub
-operately resource_hubs create \
-  --space-id company_space \
-  --name "Policies & Procedures"
+# 1. Find the space's resource hub ID
+operately spaces list_tools --space-id company_space
+# Use the returned resource hub ID below as rh1
 
 # 2. Create policy categories
 operately resource_hubs create_folder \
@@ -456,114 +425,15 @@ operately documents create \
   --content "# Access Control\n\n## Principles\n- Least privilege\n- Regular reviews\n- MFA required"
 ```
 
-### Resource Library Pattern
-
-```bash
-# 1. Create resource hub
-operately resource_hubs create \
-  --space-id marketing_space \
-  --name "Marketing Resources"
-
-# 2. Create resource categories
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
-  --name "Brand Assets"
-
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
-  --name "Templates"
-
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
-  --name "Case Studies"
-
-# 3. Add links to external resources
-operately links create \
-  --resource-hub-id rh1 \
-  --folder-id brand_folder \
-  --name "Logo Files" \
-  --url "https://drive.google.com/logos" \
-  --type "external"
-
-operately links create \
-  --resource-hub-id rh1 \
-  --folder-id templates_folder \
-  --name "Email Templates" \
-  --url "https://templates.example.com" \
-  --type "external"
-
-# 4. Add internal documents
-operately documents create \
-  --resource-hub-id rh1 \
-  --folder-id case_studies_folder \
-  --name "Customer Success: Acme Corp" \
-  --content "# Case Study\n\n[customer story]"
-```
-
-## Reorganization Workflows
-
-### Restructuring Folders
-
-```bash
-# 1. Create new folder structure
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
-  --name "New Structure"
-
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
-  --folder-id new_structure_id \
-  --name "Subfolder A"
-
-# 2. Move existing documents
-operately resource_hubs update_parent_folder \
-  --resource-id d1 \
-  --resource-type "document" \
-  --new-folder-id subfolder_a_id
-
-operately resource_hubs update_parent_folder \
-  --resource-id d2 \
-  --resource-type "document" \
-  --new-folder-id subfolder_a_id
-
-# 3. Move existing folders
-operately resource_hubs update_parent_folder \
-  --resource-id old_folder_id \
-  --resource-type "folder" \
-  --new-folder-id new_structure_id
-
-# 4. Delete empty old folders
-operately resource_hubs delete_folder --folder-id empty_folder_id
-```
-
-### Consolidating Content
-
-```bash
-# 1. List all content
-operately resource_hubs list_nodes --resource-hub-id rh1
-
-# 2. Create consolidated folder
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
-  --name "Consolidated Guides"
-
-# 3. Move related documents
-operately resource_hubs update_parent_folder \
-  --resource-id d1 \
-  --resource-type "document" \
-  --new-folder-id consolidated_id
-
-operately resource_hubs update_parent_folder \
-  --resource-id d2 \
-  --resource-type "document" \
-  --new-folder-id consolidated_id
-```
-
 ## Gotchas
 
 ### Resource Hub per Space
 
-Each space has one resource hub. You cannot create multiple resource hubs in the same space.
+Each space has one resource hub. Find its ID with:
+
+```bash
+operately spaces list_tools --space-id s1
+```
 
 ### Folder Hierarchy Depth
 
@@ -582,7 +452,7 @@ When moving items between folders, the `resource-type` must be exact:
 
 ### Deleting Folders
 
-Deleting a folder may delete its contents (documents, links, subfolders). Check the folder contents first:
+Deleting a folder will delete its contents (documents, links, subfolders). Check the folder contents first:
 
 ```bash
 operately resource_hubs list_nodes --folder-id f1
@@ -623,19 +493,6 @@ The `--type` parameter for links is required. Common values:
 - `"external"` - External URLs
 - `"document"` - Links to other documents
 - `"resource"` - Links to resources
-
-### Access Control Inheritance
-
-Resource hubs inherit access control from their space by default. Override with specific access levels:
-
-```bash
-operately resource_hubs create \
-  --space-id s1 \
-  --name "Restricted Docs" \
-  --anonymous-access-level 0 \
-  --company-access-level 0 \
-  --space-access-level 70
-```
 
 ### Markdown in Documents
 
