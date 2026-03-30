@@ -399,7 +399,8 @@ operately goals update_target_value \
 operately goals create_check_in \
   --goal-id g1 \
   --status on_track \
-  --message "Making good progress on Q2 targets"
+  --due-date 2026-04-01 \
+  --content "Making good progress on Q2 targets"
 
 # List check-ins
 operately goals list_check_ins --goal-id g1
@@ -601,7 +602,7 @@ operately links create \
   --resource-hub-id rh1 \
   --name "Company Handbook" \
   --url "https://handbook.example.com" \
-  --type "external"
+  --type "other"
 
 # Create link in folder
 operately links create \
@@ -609,7 +610,7 @@ operately links create \
   --folder-id f1 \
   --name "Design System" \
   --url "https://design.example.com" \
-  --type "external" \
+  --type "other" \
   --description "Our design system documentation"
 ```
 
@@ -650,7 +651,7 @@ operately projects create_discussion \
 operately goals create_discussion \
   --goal-id g1 \
   --title "Target Adjustment" \
-  --body "Should we revise our targets?"
+  --message "Should we revise our targets?"
 ```
 
 ### List Discussions
@@ -703,15 +704,15 @@ operately notifications mark_all_as_read
 # Check subscription
 operately notifications is_subscribed \
   --resource-id r1 \
-  --resource-type "project"
+  --resource-type project
 
 # Subscribe to resource
 operately notifications subscribe \
-  --id r1 \
-  --type "project"
+  --subscription-list-id r1 \
+  --type project
 
 # Unsubscribe from subscription list
-operately notifications unsubscribe --id sub1
+operately notifications unsubscribe --subscription-list-id sub1
 ```
 
 ## People

@@ -188,7 +188,7 @@ operately links create \
   --resource-hub-id rh1 \
   --name "Company Handbook" \
   --url "https://handbook.example.com" \
-  --type "external"
+  --type "other"
 ```
 
 **Create link in folder:**
@@ -198,7 +198,7 @@ operately links create \
   --folder-id f1 \
   --name "Design System" \
   --url "https://design.example.com" \
-  --type "external" \
+  --type "other" \
   --description "# Design System\n\nOur component library and design guidelines."
 ```
 
@@ -208,7 +208,7 @@ operately links create \
   --resource-hub-id rh1 \
   --name "New Tool" \
   --url "https://tool.example.com" \
-  --type "external" \
+  --type "other" \
   --description "Check out our new project management tool" \
   --send-notifications-to-everyone true
 ```
@@ -225,7 +225,7 @@ operately links get --id l1
 operately links update \
   --link-id l1 \
   --name "Updated Link Title" \
-  --type "external" \
+  --type "other" \
   --url "https://new-url.example.com" \
   --description "Updated description"
 ```
@@ -349,7 +349,7 @@ operately links create \
   --folder-id tools_folder \
   --name "CI/CD Dashboard" \
   --url "https://ci.example.com" \
-  --type "external"
+  --type "other"
 ```
 
 ### Project Documentation Pattern
@@ -388,7 +388,7 @@ operately links create \
   --folder-id design_folder \
   --name "Figma Mockups" \
   --url "https://figma.com/file/abc" \
-  --type "external"
+  --type "other"
 ```
 
 ### Policy & Procedures Pattern

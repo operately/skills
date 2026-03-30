@@ -107,10 +107,10 @@ operately projects create_check_in \
   --status on_track \
   --description "# Week 1 Progress\n\n## Completed\n- Wireframes done\n- Design review scheduled\n\n## Next Week\n- Start mockups\n- Finalize color palette"
 
-# At-risk check-in
+# Off-track check-in
 operately projects create_check_in \
   --project-id p1 \
-  --status at_risk \
+  --status off_track \
   --description "# Week 3 Progress\n\n## Issues\n- API development delayed due to infrastructure issues\n\n## Mitigation\n- Working with DevOps to resolve\n- May need to extend milestone by 3 days"
 ```
 
@@ -319,12 +319,12 @@ operately projects create_check_in \
   --description "# Milestone Complete: Design Phase\n\n## Deliverables\n- ✅ Wireframes\n- ✅ High-fidelity mockups\n- ✅ Design system components\n\n## Next Milestone\nStarting development phase."
 ```
 
-### At-Risk Check-in
+### Off-Track Check-in
 
 ```bash
 operately projects create_check_in \
   --project-id p1 \
-  --status at_risk \
+  --status off_track \
   --description "# Risk Alert\n\n## Issue\nKey engineer on leave, development delayed.\n\n## Mitigation\n- Reassigning tasks\n- Extending timeline by 1 week\n- Daily standups for visibility"
 ```
 
@@ -338,7 +338,7 @@ operately projects acknowledge_check_in --id ci1
 operately projects list_check_ins --project-id p1
 
 # Get specific check-in
-operately projects get_check_in --check-in-id ci1
+operately projects get_check_in --id ci1
 ```
 
 ## Retrospectives
@@ -347,7 +347,7 @@ operately projects get_check_in --check-in-id ci1
 
 ```bash
 operately projects update_retrospective \
-  --id p1 \
+  --retrospective-id r1 \
   --content "# Q2 Roadmap Retrospective\n\n## What Went Well\n- Clear milestones and deliverables\n- Strong team collaboration\n- Regular check-ins kept everyone aligned\n\n## What Could Improve\n- Earlier infrastructure planning\n- More buffer time for QA\n- Better stakeholder communication\n\n## Action Items\n- Document infrastructure requirements upfront\n- Add 20% buffer to estimates\n- Weekly stakeholder updates" \
   --success-status achieved
 ```

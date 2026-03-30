@@ -174,25 +174,25 @@ operately spaces list_discussions --space-id s1
 
 **Get discussion:**
 ```bash
-operately spaces get_discussion --discussion-id d1
+operately spaces get_discussion --id d1
 ```
 
 **Update discussion:**
 ```bash
 operately spaces update_discussion \
-  --discussion-id d1 \
+  --id d1 \
   --title "Updated: Q2 Planning" \
   --body "# Q2 Planning - Updated\n\n[revised content]"
 ```
 
 **Archive discussion:**
 ```bash
-operately spaces archive_discussion --discussion-id d1
+operately spaces archive_discussion --id d1
 ```
 
 **Publish discussion:**
 ```bash
-operately spaces publish_discussion --discussion-id d1
+operately spaces publish_discussion --id d1
 ```
 
 ### Project Discussions
@@ -230,7 +230,7 @@ operately projects update_discussion \
 operately goals create_discussion \
   --goal-id g1 \
   --title "Target Adjustment Needed?" \
-  --body "# Target Discussion\n\nShould we revise our Q2 target based on market conditions?"
+  --message "# Target Discussion\n\nShould we revise our Q2 target based on market conditions?"
 ```
 
 **List discussions:**
@@ -358,15 +358,15 @@ operately notifications get_unread_count
 # Check subscription
 operately notifications is_subscribed \
   --resource-id p1 \
-  --resource-type "project"
+  --resource-type project
 
 # Subscribe to resource
 operately notifications subscribe \
-  --id p1 \
+  --subscription-list-id p1 \
   --type "project"
 
 # Unsubscribe from subscription list
-operately notifications unsubscribe --id sub1
+operately notifications unsubscribe --subscription-list-id sub1
 ```
 
 ### Marking as Read
@@ -400,8 +400,8 @@ operately companies create_member \
 **Create admin:**
 ```bash
 operately companies create_admins \
-  --person-ids u1 \
-  --person-ids u2
+  --people-ids u1 \
+  --people-ids u2
 ```
 
 **Delete admin:**
@@ -428,26 +428,31 @@ operately companies convert_member_to_guest --person-id u1
 ```bash
 operately companies invite_guest \
   --email "guest@example.com" \
-  --full-name "Guest User"
+  --full-name "Guest User" \
+  --title "Consultant"
 ```
 
 ### Company Permissions
 
 ```bash
 operately companies update_members_permissions \
-  --person-ids u1 \
-  --person-ids u2 \
-  --access-level 70
+  --members.0.id u1 \
+  --members.0.access-level edit_access \
+  --members.1.id u2 \
+  --members.1.access-level edit_access
 ```
 
 ### Resource Access
 
 ```bash
 operately companies grant_resource_access \
-  --resource-id p1 \
-  --resource-type "project" \
-  --person-ids u1 \
-  --person-ids u2
+  --person-id u1 \
+  --resources.0.resource-type project \
+  --resources.0.resource-id p1 \
+  --resources.0.access-level view_access \
+  --resources.1.resource-type goal \
+  --resources.1.resource-id g1 \
+  --resources.1.access-level edit_access
 ```
 
 ### Global Search
@@ -460,10 +465,15 @@ operately companies global_search --query "roadmap"
 
 ```bash
 # Get company activity
-operately companies get_activity
+operately companies get_activity --id a1
 
 # List activities
-operately companies list_activities
+operately companies list_activities \
+  --scope-id c1 \
+  --scope-type company \
+  --actions project_created \
+  --actions goal_created \
+  --actions project_check_in_submitted
 ```
 
 ## Common Collaboration Patterns

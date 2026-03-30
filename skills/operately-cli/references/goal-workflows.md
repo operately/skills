@@ -49,7 +49,8 @@ operately goals create_target \
 operately goals create_check_in \
   --goal-id g1 \
   --status on_track \
-  --message "# Q2 Progress - Week 4\n\n## Current MRR\n$65,000 (target: $100,000)\n\n## Progress\n- 30% to target\n- On track for Q2 goal"
+  --due-date 2026-04-01 \
+  --content "# Q2 Progress - Week 4\n\n## Current MRR\n$65,000 (target: $100,000)\n\n## Progress\n- 30% to target\n- On track for Q2 goal"
 ```
 
 ### 4. Update Target Values
@@ -214,7 +215,8 @@ operately goals delete_target --goal-id g1 --target-id t1
 operately goals create_check_in \
   --goal-id g1 \
   --status on_track \
-  --message "# Week 1 Update\n\n## Progress\n- MRR: $52,000 (+$2,000)\n- New customers: 15\n\n## Next Week\n- Launch marketing campaign\n- Close 3 enterprise deals"
+  --due-date 2026-04-01 \
+  --content "# Week 1 Update\n\n## Progress\n- MRR: $52,000 (+$2,000)\n- New customers: 15\n\n## Next Week\n- Launch marketing campaign\n- Close 3 enterprise deals"
 ```
 
 ### Monthly Check-ins
@@ -223,7 +225,8 @@ operately goals create_check_in \
 operately goals create_check_in \
   --goal-id g1 \
   --status on_track \
-  --message "# April Progress\n\n## Metrics\n- MRR: $60,000 (60% to target)\n- Customer count: 250 (50% to target)\n- Churn rate: 3% (below 5% target)\n\n## Highlights\n- Closed 2 enterprise deals\n- Product launch successful\n\n## Challenges\n- Sales cycle longer than expected\n\n## May Plan\n- Focus on mid-market segment\n- Accelerate onboarding"
+  --due-date 2026-04-01 \
+  --content "# April Progress\n\n## Metrics\n- MRR: $60,000 (60% to target)\n- Customer count: 250 (50% to target)\n- Churn rate: 3% (below 5% target)\n\n## Highlights\n- Closed 2 enterprise deals\n- Product launch successful\n\n## Challenges\n- Sales cycle longer than expected\n\n## May Plan\n- Focus on mid-market segment\n- Accelerate onboarding"
 ```
 
 ### At-Risk Check-ins
@@ -232,7 +235,8 @@ operately goals create_check_in \
 operately goals create_check_in \
   --goal-id g1 \
   --status at_risk \
-  --message "# Risk Alert - Week 8\n\n## Issue\nMRR growth slowed to $1,000/week (need $3,000/week to hit target)\n\n## Root Cause\n- Marketing campaign underperforming\n- 2 enterprise deals delayed\n\n## Mitigation Plan\n- Revise marketing strategy\n- Increase sales outreach\n- Consider target adjustment"
+  --due-date 2026-04-01 \
+  --content "# Risk Alert - Week 8\n\n## Issue\nMRR growth slowed to $1,000/week (need $3,000/week to hit target)\n\n## Root Cause\n- Marketing campaign underperforming\n- 2 enterprise deals delayed\n\n## Mitigation Plan\n- Revise marketing strategy\n- Increase sales outreach\n- Consider target adjustment"
 ```
 
 ### Off-Track Check-ins
@@ -241,7 +245,8 @@ operately goals create_check_in \
 operately goals create_check_in \
   --goal-id g1 \
   --status off_track \
-  --message "# Status Update - Week 10\n\n## Current State\nMRR: $58,000 (58% to target with 2 weeks left)\n\n## Analysis\nUnlikely to reach $100,000 target\n\n## Options\n1. Extend timeline to Q3\n2. Revise target to $75,000\n3. Close as partially achieved\n\n## Recommendation\nRevise target based on market conditions"
+  --due-date 2026-04-01 \
+  --content "# Status Update - Week 10\n\n## Current State\nMRR: $58,000 (58% to target with 2 weeks left)\n\n## Analysis\nUnlikely to reach $100,000 target\n\n## Options\n1. Extend timeline to Q3\n2. Revise target to $75,000\n3. Close as partially achieved\n\n## Recommendation\nRevise target based on market conditions"
 ```
 
 ### Acknowledging Check-ins
@@ -254,13 +259,13 @@ operately goals acknowledge_check_in --id ci1
 operately goals list_check_ins --goal-id g1
 
 # Get specific check-in
-operately goals get_check_in --check-in-id ci1
+operately goals get_check_in --id ci1
 
 # Update check-in
 operately goals update_check_in \
   --check-in-id ci1 \
   --status on_track \
-  --message "# Updated Status\n\nRevised after team discussion."
+  --content "# Updated Status\n\nRevised after team discussion."
 ```
 
 ## Roles and Responsibilities
@@ -345,7 +350,7 @@ operately goals delete_check --check-id c1
 operately goals create_discussion \
   --goal-id g1 \
   --title "Target Adjustment Discussion" \
-  --body "# Should We Revise Our Q2 Target?\n\n## Context\nMarket conditions have changed.\n\n## Proposal\nRevise from $100K to $75K.\n\n## Feedback Needed\nThoughts from the team?"
+  --message "# Should We Revise Our Q2 Target?\n\n## Context\nMarket conditions have changed.\n\n## Proposal\nRevise from $100K to $75K.\n\n## Feedback Needed\nThoughts from the team?"
 ```
 
 ### Managing Discussions
