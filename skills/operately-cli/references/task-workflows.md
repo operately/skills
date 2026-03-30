@@ -1,13 +1,15 @@
 # Task Workflows
 
-Task management best practices in Operately, covering task creation, assignment, status management, and organization patterns.
+Task management best practices in Operately, covering task creation, assignment, status management, and organization patterns for both project and space tasks.
 
 ## Task Basics
 
 ### Creating Tasks
 
+**Project Tasks:**
+
 ```bash
-# Basic task
+# Basic project task
 operately tasks create \
   --type project \
   --id p1 \
@@ -16,7 +18,7 @@ operately tasks create \
   --assignee-id null \
   --due-date null
 
-# Task with assignee and due date
+# Project task with assignee and due date
 operately tasks create \
   --type project \
   --id p1 \
@@ -25,7 +27,7 @@ operately tasks create \
   --assignee-id u1 \
   --due-date 2024-06-15
 
-# Task with description
+# Project task with description
 operately tasks create \
   --type project \
   --id p1 \
@@ -40,7 +42,43 @@ operately tasks update_description \
   --description "# API Documentation\n\n## Endpoints to Document\n- /api/users\n- /api/projects\n- /api/goals"
 ```
 
-**Note:** Tasks require `--type` ("project" or "space") and `--id` (project or space ID) parameters.
+**Space Tasks:**
+
+```bash
+# Basic space task
+operately tasks create \
+  --type space \
+  --id s1 \
+  --name "Update team documentation" \
+  --milestone-id null \
+  --assignee-id u1 \
+  --due-date 2024-06-15
+
+# Unassigned space task
+operately tasks create \
+  --type space \
+  --id s1 \
+  --name "Review onboarding process" \
+  --milestone-id null \
+  --assignee-id null \
+  --due-date null
+
+# Space task with description
+operately tasks create \
+  --type space \
+  --id s1 \
+  --name "Organize team resources" \
+  --milestone-id null \
+  --assignee-id u2 \
+  --due-date 2024-06-20
+
+operately tasks update_description \
+  --task-id t3 \
+  --type space \
+  --description "# Resource Organization\n\n## Tasks\n- Categorize documents\n- Update links\n- Archive old files"
+```
+
+**Note:** Tasks require `--type` ("project" or "space") and `--id` (project or space ID) parameters. Space tasks cannot belong to milestones and must have `--milestone-id null`.
 
 ### Getting Task Details
 
@@ -58,16 +96,24 @@ operately tasks list --project-id p1
 operately spaces list_tasks --space-id s1
 ```
 
+**Note:** Use `tasks list` for projects and `spaces list_tasks` for spaces.
+
 ## Task Assignment
 
 ### Assigning Tasks
 
 ```bash
-# Assign to user
+# Assign project task to user
 operately tasks update_assignee \
   --task-id t1 \
   --type project \
   --assignee-id u1
+
+# Assign space task to user
+operately tasks update_assignee \
+  --task-id t2 \
+  --type space \
+  --assignee-id u2
 
 # Unassign (set to null)
 operately tasks update_assignee \
@@ -79,9 +125,15 @@ operately tasks update_assignee \
 ### Finding Potential Assignees
 
 ```bash
+# For project tasks
 operately tasks list_potential_assignees \
   --id t1 \
   --type project
+
+# For space tasks
+operately tasks list_potential_assignees \
+  --id t2 \
+  --type space
 ```
 
 ## Status Management
@@ -89,10 +141,21 @@ operately tasks list_potential_assignees \
 ### Updating Task Status
 
 ```bash
-# Mark as in progress
+# Mark project task as in progress
 operately tasks update_status \
   --task-id t1 \
   --type project \
+  --status.id in_progress \
+  --status.label "In Progress" \
+  --status.color blue \
+  --status.index 1 \
+  --status.value in_progress \
+  --status.closed false
+
+# Mark space task as in progress
+operately tasks update_status \
+  --task-id t2 \
+  --type space \
   --status.id in_progress \
   --status.label "In Progress" \
   --status.color blue \
@@ -125,17 +188,17 @@ operately tasks update_status \
 
 ### Custom Status Workflows
 
-Task statuses are project-specific. Get available statuses:
+Task statuses are project-specific or space-specific.
+
+**Project task statuses:**
 
 ```bash
+# Get available statuses
 operately projects get \
   --project-id p1 \
   --include-task-statuses
-```
 
-Update project task statuses:
-
-```bash
+# Update project task statuses
 operately projects update_task_statuses \
   --project-id p1 \
   --task-statuses.0.id ts1 \
@@ -148,34 +211,80 @@ operately projects update_task_statuses \
   --task-statuses.3.label "Done"
 ```
 
+**Space task statuses:**
+
+```bash
+# Update space task statuses
+operately spaces update_task_statuses \
+  --space-id s1 \
+  --task-statuses.0.id ts1 \
+  --task-statuses.0.label "To Do" \
+  --task-statuses.0.color gray \
+  --task-statuses.0.index 0 \
+  --task-statuses.0.value todo \
+  --task-statuses.0.closed false \
+  --task-statuses.1.id ts2 \
+  --task-statuses.1.label "In Progress" \
+  --task-statuses.1.color blue \
+  --task-statuses.1.index 1 \
+  --task-statuses.1.value in_progress \
+  --task-statuses.1.closed false \
+  --task-statuses.2.id ts3 \
+  --task-statuses.2.label "Done" \
+  --task-statuses.2.color green \
+  --task-statuses.2.index 2 \
+  --task-statuses.2.value done \
+  --task-statuses.2.closed true
+```
+
 ## Task Updates
 
 ### Updating Task Name
 
 ```bash
+# Update project task name
 operately tasks update_name \
   --task-id t1 \
   --type project \
   --name "Updated task name"
+
+# Update space task name
+operately tasks update_name \
+  --task-id t2 \
+  --type space \
+  --name "Updated space task name"
 ```
 
 ### Updating Task Description
 
 ```bash
+# Update project task description
 operately tasks update_description \
   --task-id t1 \
   --type project \
   --description "# Updated Description\n\n## Details\nAdditional context and requirements."
+
+# Update space task description
+operately tasks update_description \
+  --task-id t2 \
+  --type space \
+  --description "# Space Task Details\n\n## Context\nTeam-wide task for documentation."
 ```
 
 ### Updating Due Date
 
 ```bash
-# Set due date
+# Set due date for project task
 operately tasks update_due_date \
   --task-id t1 \
   --type project \
   --due-date 2024-06-20
+
+# Set due date for space task
+operately tasks update_due_date \
+  --task-id t2 \
+  --type space \
+  --due-date 2024-06-25
 
 # Remove due date
 operately tasks update_due_date \
@@ -188,13 +297,15 @@ operately tasks update_due_date \
 
 ### Moving Tasks Between Milestones
 
+**Note:** Only project tasks can be moved between milestones. Space tasks cannot belong to milestones.
+
 ```bash
-# Simple move
+# Simple move (project tasks only)
 operately tasks update_milestone \
   --task-id t1 \
   --milestone-id m2
 
-# Move with specific ordering
+# Move with specific ordering (project tasks only)
 operately tasks update_milestone_and_ordering \
   --task-id t1 \
   --milestone-id m2 \
@@ -205,16 +316,35 @@ operately tasks update_milestone_and_ordering \
 ### General Task Movement
 
 ```bash
+# Move task from one project to another
 operately tasks move \
   --task-id t1 \
   --destination-type project \
   --destination-id p2
+
+# Move task from project to space
+operately tasks move \
+  --task-id t1 \
+  --destination-type space \
+  --destination-id s1
+
+# Move task from one space to another
+operately tasks move \
+  --task-id t2 \
+  --destination-type space \
+  --destination-id s2
 ```
+
+**Note:** When moving a project task to a space, the milestone association is removed since space tasks cannot have milestones.
 
 ### Deleting Tasks
 
 ```bash
+# Delete project task
 operately tasks delete --task-id t1 --type project
+
+# Delete space task
+operately tasks delete --task-id t2 --type space
 ```
 
 ## Task Patterns
@@ -285,6 +415,96 @@ operately tasks update_status --task-id t1 --type project --status.id ready --st
 operately tasks update_status --task-id t1 --type project --status.id in_progress --status.label "In Progress" --status.color blue --status.index 2 --status.value in_progress --status.closed false
 operately tasks update_status --task-id t1 --type project --status.id review --status.label "Review" --status.color yellow --status.index 3 --status.value review --status.closed false
 operately tasks update_status --task-id t1 --type project --status.id done --status.label "Done" --status.color green --status.index 4 --status.value done --status.closed true
+```
+
+### Space Task Board Pattern
+
+```bash
+# 1. Enable tasks tool for space
+operately spaces update_tools \
+  --space-id s1 \
+  --tools.tasks-enabled true \
+  --tools.discussions-enabled true \
+  --tools.resource-hub-enabled true
+
+# 2. Set up custom statuses for space
+operately spaces update_task_statuses \
+  --space-id s1 \
+  --task-statuses.0.id backlog \
+  --task-statuses.0.label "Backlog" \
+  --task-statuses.0.color gray \
+  --task-statuses.0.index 0 \
+  --task-statuses.0.value backlog \
+  --task-statuses.0.closed false \
+  --task-statuses.1.id in_progress \
+  --task-statuses.1.label "In Progress" \
+  --task-statuses.1.color blue \
+  --task-statuses.1.index 1 \
+  --task-statuses.1.value in_progress \
+  --task-statuses.1.closed false \
+  --task-statuses.2.id done \
+  --task-statuses.2.label "Done" \
+  --task-statuses.2.color green \
+  --task-statuses.2.index 2 \
+  --task-statuses.2.value done \
+  --task-statuses.2.closed true
+
+# 3. Create space tasks (no milestones)
+operately tasks create --type space --id s1 --name "Update documentation" --milestone-id null --assignee-id u1 --due-date 2024-06-15
+operately tasks create --type space --id s1 --name "Review team processes" --milestone-id null --assignee-id u2 --due-date null
+operately tasks create --type space --id s1 --name "Organize resources" --milestone-id null --assignee-id null --due-date null
+
+# 4. Move through workflow
+operately tasks update_status --task-id t1 --type space --status.id in_progress --status.label "In Progress" --status.color blue --status.index 1 --status.value in_progress --status.closed false
+operately tasks update_status --task-id t1 --type space --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
+```
+
+**Note:** Space tasks work like project tasks but cannot have milestones. This makes them ideal for ongoing team tasks that aren't tied to specific project milestones.
+
+### Department Task Management Pattern
+
+```bash
+# 1. Create department space
+operately spaces create \
+  --name "Engineering" \
+  --mission "Build and maintain product infrastructure" \
+  --company-permissions 10 \
+  --public-permissions 0
+
+# 2. Enable tasks
+operately spaces update_tools \
+  --space-id s1 \
+  --tools.tasks-enabled true \
+  --tools.discussions-enabled true \
+  --tools.resource-hub-enabled true
+
+# 3. Create recurring team tasks
+operately tasks create \
+  --type space \
+  --id s1 \
+  --name "Weekly on-call rotation" \
+  --milestone-id null \
+  --assignee-id u1 \
+  --due-date 2024-06-07
+
+operately tasks create \
+  --type space \
+  --id s1 \
+  --name "Monthly security review" \
+  --milestone-id null \
+  --assignee-id u2 \
+  --due-date 2024-06-30
+
+operately tasks create \
+  --type space \
+  --id s1 \
+  --name "Update team documentation" \
+  --milestone-id null \
+  --assignee-id null \
+  --due-date null
+
+# 4. Track completion
+operately tasks update_status --task-id t1 --type space --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
 ```
 
 ### Bug Tracking Pattern
@@ -363,19 +583,51 @@ operately people get_assignments_count
 
 ## Gotchas
 
+### Project vs Space Tasks
+
+**Key differences:**
+- **Project tasks** can belong to milestones (`--milestone-id m1`)
+- **Space tasks** cannot belong to milestones (always `--milestone-id null`)
+- Both use the same task commands with different `--type` parameter
+- Moving a project task to a space removes its milestone association
+
 ### Task Status IDs
 
-Task statuses are project-specific. Always get the project's status IDs first:
+Task statuses are project-specific or space-specific. Always get the status IDs first:
 
 ```bash
+# For project tasks
 operately projects get --id p1 --include-task-statuses
+
+# For space tasks, check space tools
+operately spaces list_tools --space-id s1
 ```
 
-Don't assume status IDs like "completed" or "in_progress" - use the actual IDs from the project.
+Don't assume status IDs like "completed" or "in_progress" - use the actual IDs from the project or space.
+
+### Space Tasks Require Tool Enablement
+
+Before creating space tasks, enable the tasks tool:
+
+```bash
+operately spaces update_tools \
+  --space-id s1 \
+  --tools.tasks-enabled true \
+  --tools.discussions-enabled true \
+  --tools.resource-hub-enabled true
+```
+
+### Listing Tasks
+
+Different commands for projects vs spaces:
+- **Project tasks**: `operately tasks list --project-id p1`
+- **Space tasks**: `operately spaces list_tasks --space-id s1`
 
 ### Milestone Association
 
-Tasks can be associated with a milestone or not. However, they must belong to either a project or space.
+- **Project tasks** can be associated with a milestone or not
+- **Space tasks** cannot have milestones (limitation)
+- All tasks must belong to either a project or space
 
 ### Due Dates Are Optional
 

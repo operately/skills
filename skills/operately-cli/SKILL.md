@@ -197,7 +197,7 @@ Supported markdown:
 
 Many create commands require access level parameters to control who can view and interact with resources:
 
-- `--anonymous-access-level` - Access for non-authenticated users
+- `--anonymous-access-level` - Access for non-authenticated users (not supported yet, always use `0`)
 - `--company-access-level` - Access for company members
 - `--space-access-level` - Access for space members
 
@@ -761,16 +761,42 @@ operately companies create_member \
 
 ## Help System
 
+The CLI provides built-in help at three levels:
+
+**Namespace-level help** - List all commands in a namespace:
 ```bash
-# General help
+operately <namespace>
+operately <namespace> --help
+```
+
+Examples:
+```bash
+operately projects
+operately goals --help
+```
+
+Both forms display all available commands within that namespace.
+
+**Command-level help** - Show command description and parameters:
+```bash
+operately <namespace> <command> --help
+```
+
+Examples:
+```bash
+operately projects create --help
+operately goals update_target_value --help
+```
+
+This displays:
+- Command description
+- All required parameters (marked with `(required)`)
+- All optional parameters
+- Parameter types and formats
+
+**General help:**
+```bash
 operately help
-
-# Namespace help
-operately projects --help
-
-# Command-specific help
-operately help projects create
-operately help goals update_target_value
 ```
 
 ## Exit Codes
@@ -838,6 +864,7 @@ This is the primary skill for Operately CLI operations. Future skills may includ
 
 - [Project Workflows](references/project-workflows.md) - Project lifecycle and milestone management
 - [Goal Workflows](references/goal-workflows.md) - OKR patterns and goal tracking
-- [Task Workflows](references/task-workflows.md) - Task management best practices
+- [Task Workflows](references/task-workflows.md) - Task management best practices for projects and spaces
+- [Space Workflows](references/space-workflows.md) - Space management, members, tools, and access control
 - [Resource Hubs](references/resource-hubs.md) - Knowledge base organization
 - [Collaboration Patterns](references/collaboration-patterns.md) - Team collaboration workflows

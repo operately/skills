@@ -14,8 +14,6 @@ operately spaces create \
   --public-permissions 0
 ```
 
-**Note:** Spaces require `--company-permissions` and `--public-permissions` parameters.
-
 ### Getting Space Details
 
 ```bash

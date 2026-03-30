@@ -21,7 +21,7 @@ Optional fields:
 - `--description` - Markdown project description
 - `--goal-id` - Link to parent goal
 
-**Note:** Access levels are required. Use `--anonymous-access-level 0 --company-access-level 40 --space-access-level 70` for typical team projects.
+**Note:** Access levels are required. Use `--company-access-level 40 --space-access-level 70` for typical team projects.
 
 ### 2. Set Up Milestones
 

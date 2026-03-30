@@ -21,7 +21,7 @@ Optional fields:
 - `--description` - Markdown goal description
 - `--parent-goal-id` - Link to parent goal
 
-**Note:** Access levels are required. Use `--anonymous-access-level 0 --company-access-level 10 --space-access-level 70` for typical team goals.
+**Note:** Access levels are required. Use `--company-access-level 10 --space-access-level 70` for typical team goals.
 
 ### 2. Set Targets
 
