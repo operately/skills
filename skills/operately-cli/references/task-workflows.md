@@ -194,9 +194,7 @@ Task statuses are project-specific or space-specific.
 
 ```bash
 # Get available statuses
-operately projects get \
-  --project-id p1 \
-  --include-task-statuses
+operately projects get --id p1
 
 # Update project task statuses
 operately projects update_task_statuses \
@@ -597,7 +595,7 @@ Task statuses are project-specific or space-specific. Always get the status IDs 
 
 ```bash
 # For project tasks
-operately projects get --id p1 --include-task-statuses
+operately projects get --id p1
 
 # For space tasks, check space tools
 operately spaces list_tools --space-id s1

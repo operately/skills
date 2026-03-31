@@ -79,7 +79,7 @@ operately spaces list_members --space-id s1
 
 ```bash
 operately spaces search_potential_members \
-  --group-id s1 \
+  --space-id s1 \
   --query "engineer"
 ```
 
@@ -210,13 +210,13 @@ operately projects list_discussions --project-id p1
 
 **Get discussion:**
 ```bash
-operately projects get_discussion --discussion-id d1
+operately projects get_discussion --id d1
 ```
 
 **Update discussion:**
 ```bash
 operately projects update_discussion \
-  --discussion-id d1 \
+  --id d1 \
   --title "Decision Made: PostgreSQL" \
   --message "# Final Decision\n\nWe chose PostgreSQL."
 ```
@@ -352,19 +352,27 @@ operately notifications get_unread_count
 
 ### Managing Subscriptions
 
+**Important:** Subscribe and unsubscribe commands require a `subscription-list-id`, not the resource ID. You must first retrieve the subscription list ID from the resource.
+
 ```bash
-# Check subscription
+# Check subscription status (uses resource-id)
 operately notifications is_subscribed \
   --resource-id p1 \
   --resource-type project
 
-# Subscribe to resource
+# Get subscription-list-id from the resource
+operately projects get \
+  --id p1 \
+  --include-subscription-list
+
+# Subscribe to resource (uses subscription-list-id from above)
 operately notifications subscribe \
-  --subscription-list-id p1 \
+  --subscription-list-id <subscription-list-id> \
   --type "project"
 
-# Unsubscribe from subscription list
-operately notifications unsubscribe --subscription-list-id sub1
+# Unsubscribe from subscription list (uses subscription-list-id)
+operately notifications unsubscribe \
+  --subscription-list-id <subscription-list-id>
 ```
 
 ### Marking as Read

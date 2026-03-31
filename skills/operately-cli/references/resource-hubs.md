@@ -489,10 +489,16 @@ operately documents publish --document-id d1
 
 ### Link Types
 
-The `--type` parameter for links is required. Common values:
-- `"external"` - External URLs
-- `"document"` - Links to other documents
-- `"resource"` - Links to resources
+The `--type` parameter for links is required. Valid values:
+- `airtable`
+- `dropbox`
+- `figma`
+- `google`
+- `google_doc`
+- `google_sheet`
+- `google_slides`
+- `notion`
+- `other`
 
 ### Markdown in Documents
 

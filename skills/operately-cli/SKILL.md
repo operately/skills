@@ -701,18 +701,24 @@ operately notifications mark_many_as_read \
 # Mark all as read
 operately notifications mark_all_as_read
 
-# Check subscription
+# Check subscription status (uses resource-id)
 operately notifications is_subscribed \
   --resource-id r1 \
   --resource-type project
 
-# Subscribe to resource
+# Get subscription-list-id from the resource first
+operately projects get \
+  --id r1 \
+  --include-subscription-list
+
+# Subscribe to resource (uses subscription-list-id from above)
 operately notifications subscribe \
-  --subscription-list-id r1 \
+  --subscription-list-id <subscription-list-id> \
   --type project
 
-# Unsubscribe from subscription list
-operately notifications unsubscribe --subscription-list-id sub1
+# Unsubscribe from subscription list (uses subscription-list-id)
+operately notifications unsubscribe \
+  --subscription-list-id <subscription-list-id>
 ```
 
 ## People

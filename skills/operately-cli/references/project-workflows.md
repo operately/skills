@@ -290,11 +290,11 @@ operately projects create_discussion \
 operately projects list_discussions --project-id p1
 
 # Get discussion
-operately projects get_discussion --discussion-id d1
+operately projects get_discussion --id d1
 
 # Update discussion
 operately projects update_discussion \
-  --discussion-id d1 \
+  --id d1 \
   --title "Updated: Database Decision" \
   --message "# Final Decision\n\nWe chose PostgreSQL."
 ```
@@ -412,7 +412,7 @@ Milestones are ordered by the sequence in `update_milestone_ordering`. If you do
 
 ### Task Status IDs
 
-Task status IDs are project-specific. Use `operately projects get --id p1 --include-task-statuses` to see available statuses for a project.
+Task status IDs are project-specific. Use `operately projects get --id p1` to see available statuses for a project.
 
 ### Check-in Frequency
 

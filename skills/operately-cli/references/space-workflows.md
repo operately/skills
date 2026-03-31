@@ -142,7 +142,7 @@ operately spaces update_members_permissions \
 
 # Remove member
 operately spaces delete_member \
-  --group-id s1 \
+  --space-id s1 \
   --member-id u1
 ```
 
@@ -151,19 +151,19 @@ operately spaces delete_member \
 ```bash
 # Search for potential members
 operately spaces search_potential_members \
-  --group-id s1 \
+  --space-id s1 \
   --query "engineer"
 
 # Search with exclusions
 operately spaces search_potential_members \
-  --group-id s1 \
+  --space-id s1 \
   --query "john" \
   --exclude-ids u1 \
   --exclude-ids u2
 
 # Limit results
 operately spaces search_potential_members \
-  --group-id s1 \
+  --space-id s1 \
   --query "developer" \
   --limit 10
 ```
@@ -298,15 +298,15 @@ operately spaces get_discussion --id d1
 
 # Update discussion
 operately spaces update_discussion \
-  --discussion-id d1 \
+  --id d1 \
   --title "Updated Title" \
   --body "# Updated Content"
 
 # Publish draft
-operately spaces publish_discussion --discussion-id d1
+operately spaces publish_discussion --id d1
 
 # Archive discussion
-operately spaces archive_discussion --discussion-id d1
+operately spaces archive_discussion --id d1
 ```
 
 ## Space Tasks
@@ -645,13 +645,6 @@ Tools must be enabled before use:
 
 When a user has both company-wide and member-specific access, the **higher** level applies. Use this to grant elevated access to specific members while keeping company-wide access restricted.
 
-### Member vs Group ID
-
-Some commands use `--space-id`, others use `--group-id`. They refer to the same entity:
-- `delete_member` uses `--group-id`
-- `search_potential_members` uses `--group-id`
-- Most other commands use `--space-id`
-
 ### Permission Updates
 
 Updating space permissions affects future access. Existing members retain their explicit access levels unless updated separately via `update_members_permissions`.
@@ -662,7 +655,7 @@ Updating space permissions affects future access. Existing members retain their 
 
 ```bash
 # Count spaces by access level
-operately spaces count_by_access_level
+operately spaces count_by_access_level --access-level view_access
 ```
 
 ### Searching Spaces
