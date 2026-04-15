@@ -14,6 +14,7 @@ Operate an Operately instance through the `operately` CLI.
 | Install CLI | `npm install -g @operately/operately-cli` |
 | Login | `operately auth login --token <token>` |
 | Who am I | `operately auth whoami` |
+| List my assignments | `operately people list_assignments` |
 | List projects | `operately projects list` |
 | Get project | `operately projects get --id <id> --include-space` |
 | Create project | `operately projects create --space-id <id> --name "Q2 Roadmap" --anonymous-access-level 0 --company-access-level 10 --space-access-level 70` |
@@ -249,6 +250,32 @@ The CLI provides access to 198 API endpoints across these namespaces:
 - **resource_hubs** - Resource hub and folder operations
 - **spaces** - Space (team/department) management
 - **tasks** - Task management across projects
+
+## Assignments and Reviews
+
+Get all items requiring your attention or review with a single command:
+
+```bash
+operately people list_assignments
+```
+
+This returns assignments categorized into three groups:
+
+- **`due_soon`** - Items you own that are overdue, due today, or due soon
+- **`needs_review`** - Items where you are the reviewer (check-ins, goal updates) awaiting acknowledgment
+- **`upcoming`** - Items you own with future due dates
+
+Each category contains groups of assignments organized by their origin (project, goal, or space). Assignments include:
+
+- **Milestones** - Project milestones you own
+- **Tasks** - Project and space tasks assigned to you
+- **Projects** - Projects you own or are reviewing
+- **Goals** - Goals you own or are reviewing
+- **Check-ins** - Project and goal check-ins requiring your review
+
+The response structure groups related items together and sorts by urgency, making it easy to prioritize your work. Items needing review show the author's name and what action is required.
+
+**See:** `references/assignments-and-reviews.md` for detailed examples, filtering techniques, and integration workflows.
 
 ## Projects
 
