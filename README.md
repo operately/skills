@@ -41,7 +41,7 @@ Use this section only when changing and publishing skills from this repository.
 - Every published skill must have a `version` field in `SKILL.md` frontmatter.
 - Bump the `SKILL.md` version before publishing any changed package.
 - Use `scripts/package-clawhub`; do not create release zips by hand.
-- Keep `.clawhubignore` in each skill folder for files that must never enter the package.
+- Keep `.clawhubignore` in each skill folder for local packaging rules. The packager reads this file but does not include it in the generated archive.
 
 ### Create a Package
 
@@ -70,10 +70,9 @@ unzip -l dist/operately-cli-1.0.0-clawhub.zip
 Expected contents:
 
 - `SKILL.md`
-- `.clawhubignore`
 - supporting text files such as `references/*.md`
 
-Do not publish if the archive contains local install state, editor files, build output, secrets, or anything outside the skill folder.
+Do not publish if the archive contains `.clawhubignore`, local install state, editor files, build output, secrets, or anything outside the skill folder.
 
 ### Publish
 
