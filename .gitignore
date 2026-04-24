@@ -13,3 +13,6 @@ Thumbs.db
 
 # Node
 node_modules/
+
+# Generated package artifacts
+dist/
