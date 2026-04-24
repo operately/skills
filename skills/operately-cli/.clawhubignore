@@ -1,0 +1,7 @@
+.clawhub/
+.clawdhub/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~

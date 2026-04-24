@@ -1,6 +1,33 @@
 ---
 name: operately-cli
 description: Use when working with the Operately CLI to manage projects, goals, tasks, spaces, and resource hubs. Covers authentication, CRUD operations for all business objects, team collaboration, check-ins, milestones, and organizational workflows. Triggers on "operately", "CLI", "project management", "goal tracking", "OKR", "task", "milestone", "check-in", "space", "resource hub".
+version: 1.0.0
+metadata:
+  openclaw:
+    requires:
+      bins:
+        - operately
+    env:
+      - name: OPERATELY_API_TOKEN
+        description: API token for environment-based Operately CLI authentication.
+        required: false
+        sensitive: true
+      - name: OPERATELY_BASE_URL
+        description: Optional Operately API base URL for self-hosted, staging, or local instances.
+        required: false
+        sensitive: false
+      - name: OPERATELY_PROFILE
+        description: Optional saved Operately CLI profile name to use.
+        required: false
+        sensitive: false
+    primaryEnv: OPERATELY_API_TOKEN
+    emoji: "📋"
+    homepage: https://github.com/operately/skills
+    install:
+      - kind: node
+        package: "@operately/operately-cli"
+        bins:
+          - operately
 ---
 
 # Operately CLI
