@@ -74,7 +74,7 @@ Publish with the repo script:
 scripts/publish-clawhub operately-cli --changelog "Initial ClawHub package"
 ```
 
-The publish script packages the skill first, reads `name` and `version` from `SKILL.md`, then runs `clawhub skill publish`. If the installed ClawHub CLI only supports the older command shape, it falls back to `clawhub publish`.
+The publish script packages the skill first, reads `name` and `version` from `SKILL.md`, detects whether the installed ClawHub CLI supports `clawhub publish` or `clawhub skill publish`, then runs the supported command.
 
 To check the exact commands without publishing:
 

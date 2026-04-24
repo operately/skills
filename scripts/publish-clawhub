@@ -50,6 +50,17 @@ def run(command: list[str], *, dry_run: bool = False) -> subprocess.CompletedPro
     return subprocess.run(command, cwd=ROOT, text=True, check=True)
 
 
+def command_help(command: list[str]) -> str:
+    result = subprocess.run(
+        command,
+        cwd=ROOT,
+        text=True,
+        check=True,
+        capture_output=True,
+    )
+    return result.stdout
+
+
 def has_uncommitted_changes() -> bool:
     result = subprocess.run(
         ["git", "status", "--short"],
@@ -73,6 +84,18 @@ def package_skill(skill_arg: str, dry_run: bool) -> None:
     run([str(PACKAGE_SCRIPT), skill_arg], dry_run=dry_run)
 
 
+def publish_prefix(clawhub: str) -> list[str]:
+    skill_help = command_help([clawhub, "skill", "--help"])
+    if re.search(r"^\s*publish\b", skill_help, flags=re.M):
+        return [clawhub, "skill", "publish"]
+
+    root_help = command_help([clawhub, "--help"])
+    if re.search(r"^\s*publish\b", root_help, flags=re.M):
+        return [clawhub, "publish"]
+
+    fail("this clawhub CLI does not expose a skill publish command. Try updating it with `npm i -g clawhub`.")
+
+
 def publish(
     skill_dir: Path,
     metadata: dict[str, str],
@@ -94,9 +117,7 @@ def publish(
 
     resolved_display_name = display_name or display_name_from_slug(name)
     command = [
-        clawhub,
-        "skill",
-        "publish",
+        *publish_prefix(clawhub),
         str(skill_dir.relative_to(ROOT)),
         "--slug",
         name,
@@ -111,10 +132,8 @@ def publish(
     ]
     try:
         run(command, dry_run=dry_run)
-    except subprocess.CalledProcessError:
-        fallback = [clawhub, "publish", *command[3:]]
-        print("`clawhub skill publish` failed; trying legacy `clawhub publish`.", file=sys.stderr)
-        run(fallback, dry_run=dry_run)
+    except subprocess.CalledProcessError as error:
+        fail(f"clawhub publish failed with exit code {error.returncode}; see the command output above.")
 
 
 def main() -> None:
