@@ -4,7 +4,15 @@ Agent skills for operating the [Operately](https://github.com/operately/operatel
 
 These skills help compatible agent tools understand how to use the Operately CLI. They do not install the CLI for you and they do not replace Operately signup/authentication.
 
-## Install from Git
+## Install
+
+After this skill is published to ClawHub, install it with:
+
+```bash
+clawhub install operately-cli
+```
+
+Until then, install it from Git:
 
 ```bash
 npx skills add https://github.com/operately/skills
@@ -16,7 +24,15 @@ Or install a specific skill:
 npx skills add https://github.com/operately/skills --skill operately-cli
 ```
 
-## Publish to ClawHub
+## Skills
+
+| Skill | Description |
+| --- | --- |
+| **operately-cli** | Manage Operately goals, projects, tasks, check-ins, and team operations from the CLI |
+
+## Maintainer Workflow
+
+Use this section only when changing and publishing skills from this repository.
 
 ### Packaging Rules
 
@@ -93,9 +109,3 @@ If maintaining many skills, `sync` can publish changed folders, but use it only 
 ```bash
 clawhub sync --all --bump patch --changelog "Update Operately CLI skill"
 ```
-
-## Skills
-
-| Skill | Description |
-| --- | --- |
-| **operately-cli** | Operate Operately via CLI: auth, projects, goals, tasks, spaces, resource hubs |
