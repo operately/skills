@@ -351,6 +351,11 @@ operately goals create_discussion \
   --goal-id g1 \
   --title "Target Adjustment Discussion" \
   --message "# Should We Revise Our Q2 Target?\n\n## Context\nMarket conditions have changed.\n\n## Proposal\nRevise from $100K to $75K.\n\n## Feedback Needed\nThoughts from the team?"
+
+operately goals create_discussion \
+  --goal-id g1 \
+  --title "Target Adjustment Discussion" \
+  --message-file ./target-adjustment.md
 ```
 
 ### Managing Discussions
@@ -364,6 +369,11 @@ operately goals update_discussion \
   --activity-id d1 \
   --title "Updated Discussion Title" \
   --message "# Updated Content"
+
+operately goals update_discussion \
+  --activity-id d1 \
+  --title "Updated Discussion Title" \
+  --message-file ./updated-discussion.md
 ```
 
 ## Access Control

@@ -213,7 +213,7 @@ operately projects update_task_statuses \
 
 **Markdown content:**
 
-Many commands accept markdown content (documents, descriptions, check-ins). Use `\n` for line breaks and escape special characters:
+Many commands accept markdown content (documents, descriptions, check-ins). Use `\n` for line breaks and escape special characters, or use `--<field>-file <path>` to load the same content from a markdown file:
 
 ```bash
 # Simple markdown
@@ -226,12 +226,17 @@ operately documents create \
 operately documents create \
   --resource-hub-id rh1 \
   --name "API Documentation" \
-  --content "# API Guide\n\n## Authentication\n\nUse Bearer tokens:\n\n\`\`\`bash\ncurl -H 'Authorization: Bearer TOKEN' https://api.example.com\n\`\`\`\n\n## Endpoints\n\n- **GET /users** - List users\n- **POST /users** - Create user\n\n### Response Format\n\n\`\`\`json\n{\n  \"users\": [...]\n}\n\`\`\`"
+  --content "# API Guide\n\n## Authentication\n\nUse Bearer tokens:\n\n\`\`\`bash\ncurl -H 'Authorization: Bearer TOKEN' https://api.example.com\n\`\`\`\n\n## Endpoints\n\n- **GET /users** - List users\n- **POST /users** - Create user\n\n### Response Format\n\n\`\`\`\n{\n  \"users\": [...]\n}\n\`\`\`"
 
 # Project description with formatting
 operately projects update_description \
   --project-id p1 \
   --description "# Q2 Roadmap\n\n## Goals\n\n1. Launch new feature\n2. Improve performance\n\n## Timeline\n\n- **May:** Design phase\n- **June:** Development\n- **July:** Launch"
+
+# Project description from a markdown file
+operately projects update_description \
+  --project-id p1 \
+  --description-file ./roadmap.md
 ```
 
 Supported markdown:
@@ -717,6 +722,12 @@ operately spaces create_discussion \
   --space-id s1 \
   --title "Q2 Planning" \
   --body "# Q2 Planning\n\nLet's discuss priorities."
+
+# Space discussion from a markdown file
+operately spaces create_discussion \
+  --space-id s1 \
+  --title "Q2 Planning" \
+  --body-file ./q2-planning.md
 
 # Project discussion
 operately projects create_discussion \

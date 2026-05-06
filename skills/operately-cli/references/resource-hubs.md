@@ -511,13 +511,18 @@ Documents support full markdown including:
 - Code blocks (` ``` `)
 - Bold (`**text**`) and italic (`*text*`)
 
-Use markdown for rich, readable documentation:
+Use markdown for rich, readable documentation. For larger documents, use `--content-file <path>` to load markdown from disk:
 
 ```bash
 operately documents create \
   --resource-hub-id rh1 \
   --name "API Guide" \
-  --content "# API Documentation\n\n## Authentication\n\nUse Bearer tokens:\n\n\`\`\`bash\ncurl -H 'Authorization: Bearer TOKEN' https://api.example.com\n\`\`\`\n\n## Endpoints\n\n### GET /users\n\nReturns all users.\n\n**Response:**\n\`\`\`json\n{\n  \"users\": [...]\n}\n\`\`\`"
+  --content "# API Documentation\n\n## Authentication\n\nUse Bearer tokens:\n\n\`\`\`bash\ncurl -H 'Authorization: Bearer TOKEN' https://api.example.com\n\`\`\`\n\n## Endpoints\n\n### GET /users\n\nReturns all users.\n\n**Response:**\n\`\`\`\n{\n  \"users\": [...]\n}\n\`\`\`"
+
+operately documents create \
+  --resource-hub-id rh1 \
+  --name "API Guide" \
+  --content-file ./api-guide.md
 ```
 
 ### Notifications
