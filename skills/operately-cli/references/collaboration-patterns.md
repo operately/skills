@@ -163,6 +163,11 @@ operately spaces create_discussion \
   --space-id s1 \
   --title "Q2 Planning Discussion" \
   --body "# Q2 Planning\n\nLet's discuss our priorities for Q2.\n\n## Topics\n- Revenue goals\n- Product roadmap\n- Team growth"
+
+operately spaces create_discussion \
+  --space-id s1 \
+  --title "Q2 Planning Discussion" \
+  --body-file ./q2-planning.md
 ```
 
 **List discussions:**
@@ -181,6 +186,11 @@ operately spaces update_discussion \
   --id d1 \
   --title "Updated: Q2 Planning" \
   --body "# Q2 Planning - Updated\n\n[revised content]"
+
+operately spaces update_discussion \
+  --id d1 \
+  --title "Updated: Q2 Planning" \
+  --body-file ./q2-planning-updated.md
 ```
 
 **Archive discussion:**
@@ -201,6 +211,11 @@ operately projects create_discussion \
   --project-id p1 \
   --title "Architecture Decision: Database" \
   --message "# Database Selection\n\n## Options\n1. PostgreSQL\n2. MongoDB\n\n## Recommendation\nPostgreSQL for ACID compliance."
+
+operately projects create_discussion \
+  --project-id p1 \
+  --title "Architecture Decision: Database" \
+  --message-file ./database-selection.md
 ```
 
 **List discussions:**
@@ -219,6 +234,11 @@ operately projects update_discussion \
   --id d1 \
   --title "Decision Made: PostgreSQL" \
   --message "# Final Decision\n\nWe chose PostgreSQL."
+
+operately projects update_discussion \
+  --id d1 \
+  --title "Decision Made: PostgreSQL" \
+  --message-file ./final-decision.md
 ```
 
 ### Goal Discussions
@@ -229,6 +249,11 @@ operately goals create_discussion \
   --goal-id g1 \
   --title "Target Adjustment Needed?" \
   --message "# Target Discussion\n\nShould we revise our Q2 target based on market conditions?"
+
+operately goals create_discussion \
+  --goal-id g1 \
+  --title "Target Adjustment Needed?" \
+  --message-file ./target-discussion.md
 ```
 
 **List discussions:**
@@ -242,6 +267,11 @@ operately goals update_discussion \
   --activity-id d1 \
   --title "Target Revised" \
   --message "# Decision\n\nRevised target from $100K to $75K."
+
+operately goals update_discussion \
+  --activity-id d1 \
+  --title "Target Revised" \
+  --message-file ./target-revised.md
 ```
 
 ## Comments

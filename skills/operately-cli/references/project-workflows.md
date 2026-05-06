@@ -281,6 +281,11 @@ operately projects create_discussion \
   --project-id p1 \
   --title "Architecture Decision: Database Choice" \
   --message "# Database Selection\n\n## Options\n1. PostgreSQL\n2. MongoDB\n\n## Recommendation\nPostgreSQL for ACID compliance."
+
+operately projects create_discussion \
+  --project-id p1 \
+  --title "Architecture Decision: Database Choice" \
+  --message-file ./database-choice.md
 ```
 
 ### Managing Discussions
@@ -297,6 +302,11 @@ operately projects update_discussion \
   --id d1 \
   --title "Updated: Database Decision" \
   --message "# Final Decision\n\nWe chose PostgreSQL."
+
+operately projects update_discussion \
+  --id d1 \
+  --title "Updated: Database Decision" \
+  --message-file ./final-decision.md
 ```
 
 ## Check-in Patterns

@@ -637,7 +637,7 @@ The task creator and assignee can be different people. Use `--assignee-id` to as
 
 ### Task Descriptions Support Markdown
 
-Use markdown for rich task descriptions:
+Use markdown for rich task descriptions. For longer content, use `--description-file <path>` to load the markdown from a file:
 
 ```bash
 operately tasks create \
@@ -650,4 +650,9 @@ operately tasks update_description \
   --task-id t1 \
   --type project \
   --description "# Feature: Advanced Search\n\n## Requirements\n- Full-text search\n- Filters by date, author, type\n- Sort options\n\n## Technical Notes\n- Use Elasticsearch\n- Index updates via queue\n\n## Acceptance Criteria\n- [ ] Search returns relevant results\n- [ ] Filters work correctly\n- [ ] Performance < 200ms"
+
+operately tasks update_description \
+  --task-id t1 \
+  --type project \
+  --description-file ./advanced-search.md
 ```

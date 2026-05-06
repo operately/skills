@@ -231,6 +231,12 @@ operately spaces create_discussion \
   --space-id s1 \
   --title "Q2 Planning" \
   --body "# Q2 Planning\n\nLet's discuss our priorities."
+
+# Create discussion from a markdown file
+operately spaces create_discussion \
+  --space-id s1 \
+  --title "Q2 Planning" \
+  --body-file ./q2-planning.md
 ```
 
 **Resource Hub:**
@@ -305,6 +311,12 @@ operately spaces update_discussion \
   --id d1 \
   --title "Updated Title" \
   --body "# Updated Content"
+
+# Update discussion from a markdown file
+operately spaces update_discussion \
+  --id d1 \
+  --title "Updated Title" \
+  --body-file ./updated-content.md
 
 # Publish draft
 operately spaces publish_discussion --id d1
