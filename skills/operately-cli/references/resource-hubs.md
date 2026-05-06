@@ -297,6 +297,8 @@ operately resource_hubs list_nodes \
   --include-children-count
 ```
 
+If `comments_count` or `children_count` is missing from the response, treat that as “metadata not requested” unless the matching include flag was passed.
+
 ## Common Patterns
 
 ### Team Knowledge Base Pattern

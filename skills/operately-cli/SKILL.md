@@ -144,6 +144,21 @@ operately projects get --id p1 --include-space
 operately projects get --id p1 --include-space=true
 ```
 
+**Include flags (`--include-*`)**
+
+Include flags request extra related data or expanded result sets in the response. If an include flag is omitted, that data is **not returned**, but that does **not** mean the underlying resource does not have it. It means the CLI/API did not preload it.
+If the matching include flag was requested and the field is still missing, then treat that as the resource/data not existing for that object.
+
+Examples:
+- `operately projects get --id p1` will return the base project without `space`, `milestones`, or `contributors`.
+- `operately projects get --id p1 --include-space --include-milestones` requests those fields explicitly.
+- `operately projects get --id p1 --include-subscription-list` is required before using notification subscription commands that need the `subscription_list`.
+
+When reading CLI help:
+- Keep the flat `Input flags:` list in mind.
+- If help ends with `Include flag behavior:`, treat the listed resources as opt-in fields.
+- Do not infer “no milestones”, “no contributors”, or similar conclusions just because the field is missing from a response unless the matching include flag was requested.
+
 **Nulls:**
 ```bash
 operately goals update_due_date --goal-id g1 --due-date null
@@ -298,6 +313,8 @@ operately projects get \
   --include-space \
   --include-milestones
 ```
+
+If you omit `--include-space` or `--include-milestones`, those fields will be absent from the response even when the project has a space or milestones. Missing included data usually means “not preloaded,” not “does not exist.”
 
 ### Update Project
 
@@ -747,6 +764,8 @@ operately notifications subscribe \
 operately notifications unsubscribe \
   --subscription-list-id <subscription-list-id>
 ```
+
+If `subscription_list` is missing from the `projects get` response, do not assume the project lacks one. It means `--include-subscription-list` was omitted and the field was not preloaded.
 
 ## People
 
