@@ -365,6 +365,10 @@ operately projects get \
   --id p1 \
   --include-subscription-list
 
+# Important: without --include-subscription-list, a missing
+# subscription_list in the response means "not preloaded",
+# not that the project lacks one.
+
 # Subscribe to resource (uses subscription-list-id from above)
 operately notifications subscribe \
   --subscription-list-id <subscription-list-id> \

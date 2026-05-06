@@ -293,6 +293,10 @@ operately spaces list_discussions \
   --space-id s1 \
   --include-my-drafts
 
+# If author, comments_count, or my_drafts is missing from the response,
+# that means the matching --include-* flag was not requested,
+# not that the discussion or drafts do not exist.
+
 # Get discussion details
 operately spaces get_discussion --id d1
 
