@@ -46,7 +46,18 @@ Operate an Operately instance through the `operately` CLI.
 | --- | --- |
 | Install CLI | `npm install -g @operately/operately-cli` |
 | Login | `operately auth login --token <token>` |
+| Interactive login | `operately auth login` |
+| Login with flags | `operately auth login --method email-password --email user@example.com --password secret123456 --company-id <company-id> --access-mode full-access --profile work` |
+| Sign up | `operately auth signup` |
+| Sign up with flags | `operately auth signup --method email-password --full-name "New User" --email newuser@example.com --password secret123456 --next-step later` |
+| Join Company | `operately auth join` |
+| Join Company with flags | `operately auth join --invite-token <token> --method email-password --email user@example.com --password secret123456` |
+| Create company | `operately auth create-company` |
+| Create company with flags | `operately auth create-company --method email-password --email user@example.com --password secret123456 --company-name "Acme Corp" --profile work` |
+| List saved profiles | `operately auth profiles` |
+| Auth status (local config) | `operately auth status` |
 | Who am I | `operately auth whoami` |
+| Logout | `operately auth logout` |
 | List my assignments | `operately people list_assignments` |
 | List projects | `operately projects list` |
 | Get project | `operately projects get --id <id> --include-space` |
@@ -87,7 +98,7 @@ Interpret failures carefully:
 
 ### 1. Authenticate
 
-Generate an API token in the Operately UI at **Profile → API Tokens**, then:
+Prefer direct token login for automation, CI, or any non-interactive task. Generate an API token in the Operately UI at **Profile → API Tokens**, then:
 
 ```bash
 operately auth login --token <your-token>
@@ -104,6 +115,65 @@ operately auth login --token <token> --base-url https://operately.yourcompany.co
 operately auth whoami
 ```
 
+### Auth Flow Rules For Agents
+
+- `operately auth login --token <token>` is the safest path for automation and headless work. It validates the token and saves a profile without using the interactive bootstrap flow.
+- If an agent must use `operately auth login` without an existing token, prefer passing all known login data as flags so the CLI only asks for the unavoidable manual steps.
+- The two unavoidable manual login steps are: Google login browser confirmation, and email-code login verification-code entry from the user's email.
+- If an agent must use `operately auth signup`, prefer passing all known signup data as flags so the CLI only asks for the unavoidable manual steps.
+- The two unavoidable manual signup steps are: Google signup browser confirmation, and email/password signup verification-code entry from the user's email.
+- All `operately auth ...` commands are handcrafted in `cli/src/auth/`, with the per-flow modules under `cli/src/auth/flows/`. They are not generated from backend `external_endpoints`, even though the rest of the CLI command surface is generated.
+- Use interactive auth commands only when a human can answer prompts. For Google flows, also assume a browser is required.
+- `operately auth profiles` and `operately auth status` only report local CLI config state. They do not prove the saved token is valid. Use `operately auth whoami` when you need remote verification.
+- If the task involves choosing between login, signup, join, invite handling, or understanding which backend/internal endpoints the CLI will hit, read `references/auth-flows.md` before acting.
+
+### Agent-Friendly Login Examples
+
+Prefer these over the fully interactive bootstrap flow when the necessary details are already known:
+
+```bash
+# Password login: fully flag-driven when company and access mode are known
+operately auth login \
+  --method email-password \
+  --email user@example.com \
+  --password secret123456 \
+  --company-id <company-id> \
+  --access-mode full-access \
+  --profile work
+
+# Email-code login: only the emailed verification code remains manual
+operately auth login \
+  --method email-code \
+  --email user@example.com \
+  --company-name "Acme Corp" \
+  --access-mode read-only
+
+# Google login: browser confirmation remains manual
+operately auth login \
+  --method google \
+  --company-name "Acme Corp" \
+  --access-mode full-access
+```
+
+### Agent-Friendly Signup Examples
+
+Prefer these over the fully interactive signup flow when the necessary details are already known:
+
+```bash
+# Email/password signup: only the emailed verification code remains manual
+operately auth signup \
+  --method email-password \
+  --full-name "New User" \
+  --email newuser@example.com \
+  --password secret123456 \
+  --next-step later
+
+# Google signup: browser confirmation remains manual
+operately auth signup \
+  --method google \
+  --next-step later
+```
+
 ### Authentication Options
 
 Three ways to provide authentication:
@@ -117,6 +187,7 @@ Three ways to provide authentication:
    ```bash
    export OPERATELY_API_TOKEN=op_live_xxx
    export OPERATELY_BASE_URL=https://app.operately.com
+   export OPERATELY_PROFILE=default
    ```
 
 3. **Per-command flags** (temporary overrides):
@@ -144,7 +215,32 @@ operately auth login --token op_local_xxx --profile local --base-url http://loca
 Switch profiles:
 ```bash
 operately people get_me --profile staging
+operately auth profiles
 ```
+
+### Interactive Auth Flow Summary
+
+- `operately auth login` is hybrid for password, email-code, and Google login: with no flags it is fully interactive, but any provided login flags suppress the matching prompts. Google login still requires browser confirmation, and email-code login still requires the emailed verification code. If no `--method` flag is provided, the interactive menu still includes prompted token entry as an option.
+- `operately auth signup` is hybrid: with no flags it is fully interactive, but any provided signup flags suppress the matching prompts. Google signup still requires browser confirmation, and email/password signup still requires the emailed verification code.
+- `operately auth create-company` is hybrid: with no flags it is fully interactive, but any provided flags suppress the matching prompts. It authenticates with email/password, email code, or Google OAuth, then creates a company and saves a full-access profile.
+- `operately auth join` is hybrid: with no flags it is fully interactive, but any provided flags suppress the matching prompts. It starts from an invite token and routes differently for personal invites vs company-wide invites.
+- When an interactive flow needs a profile name and `--profile` is not provided, the CLI prompts with the current active profile as the default; blank input accepts that default.
+- In bootstrap login flows, the CLI usually exchanges a short-lived bootstrap token for a company-scoped API token and then saves the resulting profile.
+- The detailed decision tree, prompt behavior, and endpoint mapping live in `references/auth-flows.md`.
+
+**Method prerequisites — confirm access BEFORE choosing a method:**
+
+| Method | Required access |
+|---|---|
+| `--token` | The API token itself |
+| `email-password` (login) | Email address AND password |
+| `email-password` (signup) | Email address AND inbox access (a code is sent during signup) |
+| `email-code` | Email address AND inbox access (a code is sent and must be read) |
+| `google` | Browser access for the OAuth confirmation step |
+
+- **Never choose Google OAuth** in headless, CI, or automated contexts — it always requires a human to confirm in the browser.
+- **Never choose email-code** without confirmed inbox access — a code is always sent and must be entered.
+- **Always pass known values as flags** (`--method`, `--email`, `--password`, `--company-name`, etc.) to suppress every prompt that can be suppressed. Only leave a step interactive when it is truly unavoidable (browser confirmation or entering an emailed code).
 
 ### 2. Command Structure
 
@@ -890,6 +986,28 @@ This displays:
 - All optional parameters
 - Parameter types and formats
 
+**Auth command help** - Show all flags, validation rules, and examples for any `auth` subcommand:
+```bash
+operately auth <command> --help
+operately help auth <command>
+```
+
+Examples:
+```bash
+operately auth login --help
+operately auth join --help
+operately auth create-company --help
+operately auth signup --help
+```
+
+This displays the full flag list, accepted method aliases, validation rules, and copy-paste examples for that specific auth command. **Always run this before executing an auth command when uncertain about available flags or their constraints.**
+
+**Auth overview help** - List all auth subcommands:
+```bash
+operately auth
+operately help auth
+```
+
 **General help:**
 ```bash
 operately help
@@ -898,6 +1016,7 @@ operately help
 ## Exit Codes
 
 - `0` - Success
+- `1` - Auth precondition not met (e.g., logout attempted when not logged in)
 - `2` - CLI usage/validation error
 - `3` - Missing authentication token/config
 - `4` - API 4xx error (client error)
@@ -909,9 +1028,15 @@ operately help
 
 Check authentication setup:
 ```bash
+operately auth profiles
 operately auth status
 operately auth whoami
 ```
+
+Interpret them differently:
+- `operately auth profiles` lists saved local profiles, marks the active one, and shows saved metadata/base URLs.
+- `operately auth status` checks whether the CLI has local profile/token config.
+- `operately auth whoami` checks whether the current token actually works against the target Operately instance.
 
 If token is invalid or expired, login again:
 ```bash
