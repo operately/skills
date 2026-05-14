@@ -58,6 +58,9 @@ Operate an Operately instance through the `operately` CLI.
 | Auth status (local config) | `operately auth status` |
 | Who am I | `operately auth whoami` |
 | Logout | `operately auth logout` |
+| Set profile picture | `operately people update_picture --avatar-file ./avatar.png` |
+| Remove profile picture | `operately people update_picture --clear` |
+| Create file in resource hub | `operately files create --resource-hub-id <id> --file ./report.pdf` |
 | List my assignments | `operately people list_assignments` |
 | List projects | `operately projects list` |
 | Get project | `operately projects get --id <id> --include-space` |
@@ -253,9 +256,11 @@ operately <namespace> <endpoint_name> [flags]
 Examples:
 ```bash
 operately people get_me
+operately people update_picture --avatar-file path-to-avatar-file
 operately projects list
 operately goals create --name "Q2 Revenue Goal" --space-id s1
 operately tasks update_status --task-id t1 --type project --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
+operately files create --resource-hub-id r1 --file path-to-file
 ```
 
 ### 3. Input Flags
@@ -335,6 +340,38 @@ operately projects update_description \
   --description-file ./roadmap.md
 ```
 
+**Binary file uploads:**
+
+Some commands accept a real local file path and upload the bytes, not just markdown content:
+
+```bash
+# Update your profile picture from a local image
+operately people update_picture --avatar-file ./avatar.png
+
+# Remove your profile picture
+operately people update_picture --clear
+
+# Upload one file into a resource hub
+operately files create \
+  --resource-hub-id rh1 \
+  --file ./quarterly-report.pdf
+
+# Upload one file into a folder
+operately files create \
+  --resource-hub-id rh1 \
+  --folder-id f1 \
+  --file ./quarterly-report.pdf \
+  --name "Quarterly Report" \
+  --description-file ./quarterly-report.md
+```
+
+Rules for file inputs:
+- `people update_picture` accepts `--avatar-file <path>` to upload or `--clear` to remove the current picture.
+- `files create` accepts exactly one `--file <path>` per command.
+- `files create --name` overrides the base filename while preserving the source extension.
+- `--description-file <path>` still means "load markdown from disk"; the uploaded binary stays on `--file <path>`.
+- Do not try to create blobs manually first. These commands already handle blob creation, upload, preview generation, and finalization.
+
 Supported markdown:
 - Headings: `# H1`, `## H2`, `### H3`
 - Bold: `**text**`, Italic: `*text*`
@@ -385,15 +422,16 @@ operately people get_me --verbose
 
 ## Available Namespaces
 
-The CLI provides access to 198 API endpoints across these namespaces:
+The CLI provides access to the external API across these namespaces:
 
 - **comments** - Comment management on resources
 - **companies** - Company settings, members, permissions
 - **documents** - Document creation and management in resource hubs
+- **files** - File upload, retrieval, renaming, and deletion in resource hubs
 - **goals** - Goal management, check-ins, targets
 - **links** - Link management in resource hubs
 - **notifications** - Notification preferences and subscriptions
-- **people** - User and team member management
+- **people** - User and team member management, including profile picture updates
 - **projects** - Project management, milestones, check-ins
 - **reactions** - Emoji reactions to content
 - **resource_hubs** - Resource hub and folder operations
@@ -718,7 +756,7 @@ Every space already has a resource hub. To find the resource hub ID for a space:
 operately spaces list_tools --space-id s1
 ```
 
-Use the returned resource hub ID with `documents`, `links`, and `resource_hubs`.
+Use the returned resource hub ID with `documents`, `files`, `links`, and `resource_hubs`.
 
 ### Folder Management
 
@@ -927,6 +965,12 @@ operately people update \
   --id u1 \
   --title "Senior Engineer" \
   --manager-id u2
+
+# Set profile picture from a local image
+operately people update_picture --avatar-file ./avatar.png
+
+# Remove profile picture
+operately people update_picture --clear
 ```
 
 ## Company

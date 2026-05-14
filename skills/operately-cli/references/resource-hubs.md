@@ -10,13 +10,14 @@ A resource hub is a structured knowledge base that belongs to a space. It provid
 - Central location for team documentation
 - Hierarchical folder organization
 - Document management
+- File attachments
 - Link collection
 - Access control
 
 **Key Characteristics:**
 - Every space has one resource hub
 - Nested folder hierarchy (unlimited depth)
-- Documents and links can be organized in folders
+- Documents, files, and links can be organized in folders
 - Markdown support for documents
 - Access levels inherited from space or customized
 
@@ -28,7 +29,7 @@ Every space already has a resource hub. To find the resource hub ID for a space:
 operately spaces list_tools --space-id s1
 ```
 
-Use the returned resource hub ID below as `rh1`.
+Use the returned resource hub ID below as `rh1`. Use `operately files create` when you need to upload a local binary file into the hub.
 
 ### Getting Resource Hub
 
@@ -178,6 +179,60 @@ operately documents publish --document-id d1
 operately documents delete --document-id d1
 ```
 
+## Files
+
+Use files for PDFs, images, spreadsheets, and other binary attachments that should live in a resource hub. The CLI takes a local path and handles blob creation, upload, preview generation for images, and finalization automatically.
+
+**Important file rules:**
+- `operately files create` uploads exactly one `--file <path>` per command.
+- `--name` changes the stored base name but keeps the source extension.
+- `--description` or `--description-file` sets the file description; it does not replace the uploaded binary.
+
+**Create file at root:**
+```bash
+operately files create \
+  --resource-hub-id rh1 \
+  --file ./architecture.pdf
+```
+
+**Create file in folder with custom name and description:**
+```bash
+operately files create \
+  --resource-hub-id rh1 \
+  --folder-id f1 \
+  --file ./quarterly-report.pdf \
+  --name "Quarterly Report" \
+  --description-file ./quarterly-report.md
+```
+
+**Create file with targeted notifications:**
+```bash
+operately files create \
+  --resource-hub-id rh1 \
+  --file ./launch-plan.png \
+  --send-notifications-to-everyone false \
+  --subscriber-ids u1 \
+  --subscriber-ids u2
+```
+
+**Get file:**
+```bash
+operately files get --id file1
+```
+
+**Update file metadata:**
+```bash
+operately files update \
+  --file-id file1 \
+  --name "Quarterly Report.pdf" \
+  --description "# Updated Notes\n\nAttached the final version."
+```
+
+**Delete file:**
+```bash
+operately files delete --file-id file1
+```
+
 ## Links
 
 ### Creating Links
@@ -243,6 +298,15 @@ operately links delete --link-id l1
 operately resource_hubs update_parent_folder \
   --resource-id d1 \
   --resource-type "document" \
+  --new-folder-id f2
+```
+
+### Move File
+
+```bash
+operately resource_hubs update_parent_folder \
+  --resource-id file1 \
+  --resource-type "file" \
   --new-folder-id f2
 ```
 
