@@ -314,30 +314,72 @@ operately projects update_task_statuses \
 
 **Markdown content:**
 
-Many commands accept markdown content (documents, descriptions, check-ins). Use `\n` for line breaks and escape special characters, or use `--<field>-file <path>` to load the same content from a markdown file:
+Many commands accept markdown content (documents, descriptions, check-ins, discussions). For anything beyond a single short sentence, **use file input** (`--<field>-file <path>`) instead of inline strings. File input preserves formatting perfectly without shell escaping issues.
+
+**Recommended: file input for multiline content**
 
 ```bash
-# Simple markdown
-operately documents create \
-  --resource-hub-id rh1 \
-  --name "Team Guide" \
-  --content "# Getting Started\n\nWelcome to the team."
+# Write content to a temp file, then pass the path
+cat > /tmp/description.md << 'EOF'
+# Q2 Roadmap
 
-# Rich markdown with multiple elements
+## Goals
+
+1. Launch new feature
+2. Improve performance
+
+## Timeline
+
+- **May:** Design phase
+- **June:** Development
+- **July:** Launch
+EOF
+
+operately projects update_description \
+  --project-id p1 \
+  --description-file /tmp/description.md
+
+# Discussion with rich formatting
+cat > /tmp/post.md << 'EOF'
+Hey team. Here's the weekly update:
+
+- Shipped the new landing page
+- Fixed 3 bugs in check-in flow
+- Started work on notifications
+
+Next week we focus on **goal reviews**.
+EOF
+
+operately spaces create_discussion \
+  --space-id s1 \
+  --title "Weekly Update" \
+  --body-file /tmp/post.md
+
+# Document creation
 operately documents create \
   --resource-hub-id rh1 \
   --name "API Documentation" \
-  --content "# API Guide\n\n## Authentication\n\nUse Bearer tokens:\n\n\`\`\`bash\ncurl -H 'Authorization: Bearer TOKEN' https://api.example.com\n\`\`\`\n\n## Endpoints\n\n- **GET /users** - List users\n- **POST /users** - Create user\n\n### Response Format\n\n\`\`\`\n{\n  \"users\": [...]\n}\n\`\`\`"
+  --content-file ./api-docs.md
+```
 
-# Project description with formatting
+**File input flag pattern:** For any flag that accepts markdown, append `-file` to use a file path instead:
+- `--body` → `--body-file <path>`
+- `--description` → `--description-file <path>`
+- `--content` → `--content-file <path>`
+
+**Inline strings (for short, single-line content only):**
+
+```bash
+# Only use inline --body/--content/--description for simple one-liners
+operately documents create \
+  --resource-hub-id rh1 \
+  --name "Quick Note" \
+  --content "A short note with **bold** text."
+
+# Use \n for line breaks in inline strings (fragile, not recommended for complex content)
 operately projects update_description \
   --project-id p1 \
-  --description "# Q2 Roadmap\n\n## Goals\n\n1. Launch new feature\n2. Improve performance\n\n## Timeline\n\n- **May:** Design phase\n- **June:** Development\n- **July:** Launch"
-
-# Project description from a markdown file
-operately projects update_description \
-  --project-id p1 \
-  --description-file ./roadmap.md
+  --description "# Title\n\nOne paragraph."
 ```
 
 **Binary file uploads:**
@@ -378,7 +420,7 @@ Supported markdown:
 - Lists: `- item` or `1. item`
 - Links: `[text](url)`
 - Code: `` `inline` `` or `` ```block``` ``
-- Line breaks: `\n`
+- Line breaks: `\n` (inline only; files handle this naturally)
 
 **Access Levels:**
 
