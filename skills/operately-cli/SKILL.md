@@ -7,7 +7,7 @@ description: >
   automating startup/company operations, updating project status, tracking goal
   progress, managing async execution, or working with the open source company
   operating system.
-version: 1.1.0
+version: 1.2.0
 metadata:
   openclaw:
     requires:
