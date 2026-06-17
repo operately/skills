@@ -47,7 +47,7 @@ operately spaces update_tools \
   --tools.resource-hub-enabled true
 ```
 
-**Note:** The `list_tools` command returns the resource hub ID needed for document and link operations.
+**Note:** Docs & Files commands use `--space-id` directly. You do not need to look up a hub ID from `list_tools`.
 
 ### 3. Add Members
 
@@ -182,7 +182,7 @@ operately spaces join --space-id s1
 Spaces support three tools:
 - **Tasks** - Task management and Kanban boards
 - **Discussions** - Team conversations and updates
-- **Resource Hub** - Documents, files, and links
+- **Docs & Files** - Documents, files, and links
 
 ### Enabling Tools
 
@@ -239,11 +239,10 @@ operately spaces create_discussion \
   --body-file ./q2-planning.md
 ```
 
-**Resource Hub:**
+**Docs & Files:**
 ```bash
-# Get resource hub ID from list_tools, then use documents/links commands
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --name "Team Guide" \
   --content "# Getting Started"
 ```
@@ -655,7 +654,7 @@ operately spaces create_discussion \
 Tools must be enabled before use:
 - Enable tasks tool before creating space tasks
 - Enable discussions tool before creating discussions
-- Resource hub is typically enabled by default
+- Docs & Files is typically enabled by default
 
 ### Access Level Conflicts
 

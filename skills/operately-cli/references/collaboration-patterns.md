@@ -558,14 +558,11 @@ operately spaces update_tools \
   --tools.discussions-enabled true \
   --tools.resource-hub-enabled true
 
-# 5. Find the space's resource hub ID
-operately spaces list_tools --space-id s1
-
-# 6. Create welcome discussion
+# 5. Create welcome discussion
 operately spaces create_discussion \
   --space-id s1 \
   --title "Welcome to Product Team!" \
-  --body "# Welcome!\n\nGlad to have you on the team.\n\n## Getting Started\n- Review our resource hub\n- Join daily standups\n- Introduce yourself"
+  --body "# Welcome!\n\nGlad to have you on the team.\n\n## Getting Started\n- Review our Docs & Files\n- Join daily standups\n- Introduce yourself"
 ```
 
 ### Cross-Functional Project
