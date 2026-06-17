@@ -1,57 +1,61 @@
-# Resource Hubs
+# Docs & Files
 
-Resource hubs are knowledge repositories within spaces where teams can organize documents, links, and folders in a hierarchical structure.
+Docs & Files is the knowledge base within spaces and projects. Teams organize documents, files, links, and folders in a hierarchical structure.
 
-## Resource Hub Concept
+## Concept
 
-**What is a Resource Hub?**
+**What is Docs & Files?**
 
-A resource hub is a structured knowledge base that belongs to a space. It provides:
+Each space and project has a Docs & Files hub that provides:
 - Central location for team documentation
 - Hierarchical folder organization
-- Document management
-- File attachments
+- Document management (markdown)
+- File attachments (binary uploads)
 - Link collection
-- Access control
+- Access control inherited from the parent space or project
 
-**Key Characteristics:**
-- Every space has one resource hub
-- Nested folder hierarchy (unlimited depth)
-- Documents, files, and links can be organized in folders
+**Key characteristics:**
+- One Docs & Files hub per space or project
+- Nested folder hierarchy (unlimited depth, but keep it shallow for usability)
+- Documents, files, and links can live in folders
 - Markdown support for documents
-- Access levels inherited from space or customized
+- All CLI commands live under the **`documents`** namespace
 
-## Finding a Space's Resource Hub
+## Scope Rules
 
-Every space already has a resource hub. To find the resource hub ID for a space:
-
-```bash
-operately spaces list_tools --space-id s1
-```
-
-Use the returned resource hub ID below as `rh1`. Use `operately files create` when you need to upload a local binary file into the hub.
-
-### Getting Resource Hub
+Hub-scoped create and list commands require **`--space-id`** or **`--project-id`** (mutually exclusive — provide one, not both).
 
 ```bash
-operately resource_hubs get --id rh1
+# Space-scoped
+operately documents create_document --space-id s1 --name "Guide" --content "# Guide"
+
+# Project-scoped
+operately documents create_document --project-id p1 --name "Spec" --content "# Spec"
 ```
 
-## Folder Organization
+**Folder-scoped listing** works with **`--folder-id` alone** — no space or project ID needed:
+
+```bash
+operately documents list_contents --folder-id f1
+```
+
+**Do not** resolve a hub ID via `spaces list_tools`. Pass the space or project ID directly on `documents/*` commands.
+
+## Folder Operations
 
 ### Creating Folders
 
 **Create folder at root level:**
 ```bash
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --name "Guides"
 ```
 
 **Create nested folder:**
 ```bash
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --folder-id f1 \
   --name "Onboarding"
 ```
@@ -59,19 +63,19 @@ operately resource_hubs create_folder \
 **Create deep hierarchy:**
 ```bash
 # Level 1: Guides
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --name "Guides"
 
 # Level 2: Onboarding (inside Guides)
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --folder-id guides_folder_id \
   --name "Onboarding"
 
 # Level 3: Engineering (inside Onboarding)
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --folder-id onboarding_folder_id \
   --name "Engineering Onboarding"
 ```
@@ -80,26 +84,26 @@ operately resource_hubs create_folder \
 
 **Get folder details:**
 ```bash
-operately resource_hubs get_folder --id f1
+operately documents get_folder --id f1
 ```
 
 **Rename folder:**
 ```bash
-operately resource_hubs rename_folder \
+operately documents rename_folder \
   --folder-id f1 \
   --new-name "Team Guides"
 ```
 
 **Delete folder:**
 ```bash
-operately resource_hubs delete_folder --folder-id f1
+operately documents delete_folder --folder-id f1
 ```
 
 **Copy folder:**
 ```bash
-operately resource_hubs copy_folder \
+operately documents copy_folder \
   --folder-id f1 \
-  --dest-resource-hub-id rh1 \
+  --folder-name "Copied Guides" \
   --dest-parent-folder-id f2
 ```
 
@@ -109,16 +113,16 @@ operately resource_hubs copy_folder \
 
 **Create document at root:**
 ```bash
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --name "Getting Started" \
   --content "# Getting Started\n\nWelcome to the team! This guide will help you get up to speed.\n\n## First Steps\n1. Set up your development environment\n2. Read the architecture docs\n3. Join the team channels"
 ```
 
 **Create document in folder:**
 ```bash
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --folder-id f1 \
   --name "Development Setup" \
   --content "# Development Environment Setup\n\n## Prerequisites\n- Node.js 18+\n- Docker\n- Git\n\n## Installation\n\`\`\`bash\nnpm install\ndocker-compose up\n\`\`\`"
@@ -126,8 +130,8 @@ operately documents create \
 
 **Create draft document:**
 ```bash
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --folder-id f1 \
   --name "Work in Progress" \
   --content "# Draft Document\n\nThis is still being written..." \
@@ -136,8 +140,8 @@ operately documents create \
 
 **Create document with notifications:**
 ```bash
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --name "Important Announcement" \
   --content "# New Policy\n\nPlease review the updated security policy." \
   --send-notifications-to-everyone true
@@ -145,8 +149,8 @@ operately documents create \
 
 **Create document with specific subscribers:**
 ```bash
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --name "Team Update" \
   --content "# Q2 Plans" \
   --subscriber-ids u1 \
@@ -158,12 +162,12 @@ operately documents create \
 
 **Get document:**
 ```bash
-operately documents get --id d1
+operately documents get_document --id d1
 ```
 
 **Update document:**
 ```bash
-operately documents update \
+operately documents update_document \
   --document-id d1 \
   --name "Updated Guide" \
   --content "# Updated Content\n\nRevised with latest information."
@@ -171,34 +175,34 @@ operately documents update \
 
 **Publish draft:**
 ```bash
-operately documents publish --document-id d1
+operately documents publish_document --document-id d1
 ```
 
 **Delete document:**
 ```bash
-operately documents delete --document-id d1
+operately documents delete_document --document-id d1
 ```
 
 ## Files
 
-Use files for PDFs, images, spreadsheets, and other binary attachments that should live in a resource hub. The CLI takes a local path and handles blob creation, upload, preview generation for images, and finalization automatically.
+Use `documents create_file` for PDFs, images, spreadsheets, and other binary attachments. The CLI takes a local path and handles blob creation, upload, preview generation for images, and finalization automatically.
 
 **Important file rules:**
-- `operately files create` uploads exactly one `--file <path>` per command.
+- `operately documents create_file` uploads exactly one `--file <path>` per command.
 - `--name` changes the stored base name but keeps the source extension.
 - `--description` or `--description-file` sets the file description; it does not replace the uploaded binary.
 
 **Create file at root:**
 ```bash
-operately files create \
-  --resource-hub-id rh1 \
+operately documents create_file \
+  --space-id s1 \
   --file ./architecture.pdf
 ```
 
 **Create file in folder with custom name and description:**
 ```bash
-operately files create \
-  --resource-hub-id rh1 \
+operately documents create_file \
+  --space-id s1 \
   --folder-id f1 \
   --file ./quarterly-report.pdf \
   --name "Quarterly Report" \
@@ -207,8 +211,8 @@ operately files create \
 
 **Create file with targeted notifications:**
 ```bash
-operately files create \
-  --resource-hub-id rh1 \
+operately documents create_file \
+  --project-id p1 \
   --file ./launch-plan.png \
   --send-notifications-to-everyone false \
   --subscriber-ids u1 \
@@ -217,12 +221,12 @@ operately files create \
 
 **Get file:**
 ```bash
-operately files get --id file1
+operately documents get_file --id file1
 ```
 
 **Update file metadata:**
 ```bash
-operately files update \
+operately documents update_file \
   --file-id file1 \
   --name "Quarterly Report.pdf" \
   --description "# Updated Notes\n\nAttached the final version."
@@ -230,7 +234,7 @@ operately files update \
 
 **Delete file:**
 ```bash
-operately files delete --file-id file1
+operately documents delete_file --file-id file1
 ```
 
 ## Links
@@ -239,8 +243,8 @@ operately files delete --file-id file1
 
 **Create link at root:**
 ```bash
-operately links create \
-  --resource-hub-id rh1 \
+operately documents create_link \
+  --space-id s1 \
   --name "Company Handbook" \
   --url "https://handbook.example.com" \
   --type "other"
@@ -248,8 +252,8 @@ operately links create \
 
 **Create link in folder:**
 ```bash
-operately links create \
-  --resource-hub-id rh1 \
+operately documents create_link \
+  --space-id s1 \
   --folder-id f1 \
   --name "Design System" \
   --url "https://design.example.com" \
@@ -259,8 +263,8 @@ operately links create \
 
 **Create link with notifications:**
 ```bash
-operately links create \
-  --resource-hub-id rh1 \
+operately documents create_link \
+  --space-id s1 \
   --name "New Tool" \
   --url "https://tool.example.com" \
   --type "other" \
@@ -272,12 +276,12 @@ operately links create \
 
 **Get link:**
 ```bash
-operately links get --id l1
+operately documents get_link --id l1
 ```
 
 **Update link:**
 ```bash
-operately links update \
+operately documents update_link \
   --link-id l1 \
   --name "Updated Link Title" \
   --type "other" \
@@ -287,7 +291,7 @@ operately links update \
 
 **Delete link:**
 ```bash
-operately links delete --link-id l1
+operately documents delete_link --link-id l1
 ```
 
 ## Moving Items Between Folders
@@ -295,7 +299,7 @@ operately links delete --link-id l1
 ### Move Document
 
 ```bash
-operately resource_hubs update_parent_folder \
+operately documents update_parent_folder \
   --resource-id d1 \
   --resource-type "document" \
   --new-folder-id f2
@@ -304,7 +308,7 @@ operately resource_hubs update_parent_folder \
 ### Move File
 
 ```bash
-operately resource_hubs update_parent_folder \
+operately documents update_parent_folder \
   --resource-id file1 \
   --resource-type "file" \
   --new-folder-id f2
@@ -313,7 +317,7 @@ operately resource_hubs update_parent_folder \
 ### Move Link
 
 ```bash
-operately resource_hubs update_parent_folder \
+operately documents update_parent_folder \
   --resource-id l1 \
   --resource-type "link" \
   --new-folder-id f2
@@ -322,7 +326,7 @@ operately resource_hubs update_parent_folder \
 ### Move Folder
 
 ```bash
-operately resource_hubs update_parent_folder \
+operately documents update_parent_folder \
   --resource-id f1 \
   --resource-type "folder" \
   --new-folder-id f2
@@ -332,7 +336,7 @@ operately resource_hubs update_parent_folder \
 
 ```bash
 # Move to root by setting new-folder-id to null
-operately resource_hubs update_parent_folder \
+operately documents update_parent_folder \
   --resource-id d1 \
   --resource-type "document" \
   --new-folder-id null
@@ -343,75 +347,91 @@ operately resource_hubs update_parent_folder \
 ### List Root Contents
 
 ```bash
-operately resource_hubs list_nodes --resource-hub-id rh1
+operately documents list_contents --space-id s1
 ```
 
 ### List Folder Contents
 
 ```bash
-operately resource_hubs list_nodes --folder-id f1
+operately documents list_contents --folder-id f1
 ```
 
 ### List with Metadata
 
 ```bash
-operately resource_hubs list_nodes \
-  --resource-hub-id rh1 \
+operately documents list_contents \
+  --space-id s1 \
   --include-comments-count \
   --include-children-count
 ```
 
-If `comments_count` or `children_count` is missing from the response, treat that as “metadata not requested” unless the matching include flag was passed.
+If `comments_count` or `children_count` is missing from the response, treat that as "metadata not requested" unless the matching include flag was passed.
+
+## Project-Scoped Docs & Files
+
+Projects have their own Docs & Files hub. Use `--project-id` instead of `--space-id`:
+
+```bash
+# List project hub contents
+operately documents list_contents --project-id p1
+
+# Add a spec document
+operately documents create_document \
+  --project-id p1 \
+  --name "Technical Spec" \
+  --content "# Spec\n\nArchitecture overview..."
+
+# Upload a PDF
+operately documents create_file \
+  --project-id p1 \
+  --file ./spec.pdf
+```
 
 ## Common Patterns
 
 ### Team Knowledge Base Pattern
 
 ```bash
-# 1. Find the space's resource hub ID
-operately spaces list_tools --space-id engineering_space
-# Use the returned resource hub ID below as rh1
-
-# 2. Create folder structure
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+# 1. Create folder structure
+operately documents create_folder \
+  --space-id s1 \
   --name "Onboarding"
 
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --name "Architecture"
 
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --name "Processes"
 
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --name "Tools & Resources"
 
-# 3. Add onboarding documents
-operately documents create \
-  --resource-hub-id rh1 \
+# 2. Add onboarding documents
+operately documents create_document \
+  --space-id s1 \
   --folder-id onboarding_folder \
   --name "Day 1 Guide" \
   --content "# Welcome!\n\n## Your First Day\n- Meet the team\n- Set up accounts\n- Review codebase"
 
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --folder-id onboarding_folder \
   --name "Development Setup" \
   --content "# Dev Environment\n\n[setup instructions]"
 
-# 4. Add architecture docs
-operately documents create \
-  --resource-hub-id rh1 \
+# 3. Add architecture docs
+operately documents create_document \
+  --space-id s1 \
   --folder-id architecture_folder \
   --name "System Overview" \
   --content "# Architecture\n\n[system design]"
 
-# 5. Add tool links
-operately links create \
-  --resource-hub-id rh1 \
+# 4. Add tool links
+operately documents create_link \
+  --space-id s1 \
   --folder-id tools_folder \
   --name "CI/CD Dashboard" \
   --url "https://ci.example.com" \
@@ -421,36 +441,32 @@ operately links create \
 ### Project Documentation Pattern
 
 ```bash
-# 1. Find the space's resource hub ID
-operately spaces list_tools --space-id product_space
-# Use the returned resource hub ID below as rh1
-
-# 2. Create project phases as folders
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+# 1. Create project phases as folders
+operately documents create_folder \
+  --project-id p1 \
   --name "Discovery"
 
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --project-id p1 \
   --name "Design"
 
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --project-id p1 \
   --name "Development"
 
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --project-id p1 \
   --name "Launch"
 
-# 3. Add phase-specific content
-operately documents create \
-  --resource-hub-id rh1 \
+# 2. Add phase-specific content
+operately documents create_document \
+  --project-id p1 \
   --folder-id discovery_folder \
   --name "User Research Findings" \
   --content "# Research Summary\n\n[findings]"
 
-operately links create \
-  --resource-hub-id rh1 \
+operately documents create_link \
+  --project-id p1 \
   --folder-id design_folder \
   --name "Figma Mockups" \
   --url "https://figma.com/file/abc" \
@@ -460,32 +476,28 @@ operately links create \
 ### Policy & Procedures Pattern
 
 ```bash
-# 1. Find the space's resource hub ID
-operately spaces list_tools --space-id company_space
-# Use the returned resource hub ID below as rh1
-
-# 2. Create policy categories
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+# 1. Create policy categories
+operately documents create_folder \
+  --space-id s1 \
   --name "HR Policies"
 
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --name "Security Policies"
 
-operately resource_hubs create_folder \
-  --resource-hub-id rh1 \
+operately documents create_folder \
+  --space-id s1 \
   --name "Engineering Processes"
 
-# 3. Add policies
-operately documents create \
-  --resource-hub-id rh1 \
+# 2. Add policies
+operately documents create_document \
+  --space-id s1 \
   --folder-id hr_folder \
   --name "Time Off Policy" \
   --content "# Time Off\n\n## Vacation\n- 20 days per year\n- Request 2 weeks in advance"
 
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --folder-id security_folder \
   --name "Access Control Policy" \
   --content "# Access Control\n\n## Principles\n- Least privilege\n- Regular reviews\n- MFA required"
@@ -493,17 +505,13 @@ operately documents create \
 
 ## Gotchas
 
-### Resource Hub per Space
+### One Hub per Space or Project
 
-Each space has one resource hub. Find its ID with:
-
-```bash
-operately spaces list_tools --space-id s1
-```
+Each space and each project has one Docs & Files hub. Scope commands with `--space-id` or `--project-id` — do not look up hub IDs.
 
 ### Folder Hierarchy Depth
 
-There's no technical limit on folder depth, but keep it shallow (3-4 levels max) for usability:
+There is no technical limit on folder depth, but keep it shallow (3–4 levels max) for usability:
 - Level 1: Main categories (Onboarding, Architecture, Processes)
 - Level 2: Subcategories (Frontend, Backend, DevOps)
 - Level 3: Specific topics (React Guide, API Design)
@@ -513,6 +521,7 @@ There's no technical limit on folder depth, but keep it shallow (3-4 levels max)
 
 When moving items between folders, the `resource-type` must be exact:
 - `"document"` for documents
+- `"file"` for files
 - `"link"` for links
 - `"folder"` for folders
 
@@ -521,20 +530,20 @@ When moving items between folders, the `resource-type` must be exact:
 Deleting a folder will delete its contents (documents, links, subfolders). Check the folder contents first:
 
 ```bash
-operately resource_hubs list_nodes --folder-id f1
+operately documents list_contents --folder-id f1
 ```
 
 Move important items before deleting:
 
 ```bash
 # Move items out first
-operately resource_hubs update_parent_folder \
+operately documents update_parent_folder \
   --resource-id d1 \
   --resource-type "document" \
   --new-folder-id safe_folder_id
 
 # Then delete folder
-operately resource_hubs delete_folder --folder-id f1
+operately documents delete_folder --folder-id f1
 ```
 
 ### Document Drafts
@@ -543,14 +552,14 @@ Draft documents are visible to editors but not published to the team. Use drafts
 
 ```bash
 # Create draft
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --name "WIP: New Policy" \
   --content "# Draft\n\nStill writing..." \
   --post-as-draft true
 
 # Publish when ready
-operately documents publish --document-id d1
+operately documents publish_document --document-id d1
 ```
 
 ### Link Types
@@ -578,13 +587,8 @@ Documents support full markdown including:
 Use markdown for rich, readable documentation. For larger documents, use `--content-file <path>` to load markdown from disk:
 
 ```bash
-operately documents create \
-  --resource-hub-id rh1 \
-  --name "API Guide" \
-  --content "# API Documentation\n\n## Authentication\n\nUse Bearer tokens:\n\n\`\`\`bash\ncurl -H 'Authorization: Bearer TOKEN' https://api.example.com\n\`\`\`\n\n## Endpoints\n\n### GET /users\n\nReturns all users.\n\n**Response:**\n\`\`\`\n{\n  \"users\": [...]\n}\n\`\`\`"
-
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --name "API Guide" \
   --content-file ./api-guide.md
 ```
@@ -595,8 +599,8 @@ Use `--send-notifications-to-everyone` sparingly. For targeted notifications, us
 
 ```bash
 # Notify specific people
-operately documents create \
-  --resource-hub-id rh1 \
+operately documents create_document \
+  --space-id s1 \
   --name "Team Update" \
   --content "# Update" \
   --subscriber-ids u1 \
@@ -611,4 +615,8 @@ Use the company global search to find documents and links:
 operately companies global_search --query "onboarding"
 ```
 
-This searches across all resource hubs, documents, and links in the company.
+This searches across all Docs & Files hubs, documents, and links in the company.
+
+### Legacy CLI Commands (CLI ≤ 1.6)
+
+Older CLI versions used separate `resource_hubs/*`, `files/*`, and `links/*` namespaces with `--resource-hub-id`. Those routes still exist on the API for backward compatibility but are hidden from the current CLI catalog. Always use the `documents/*` commands documented above.
