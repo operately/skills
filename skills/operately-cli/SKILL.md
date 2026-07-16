@@ -7,7 +7,7 @@ description: >
   automating startup/company operations, updating project status, tracking goal
   progress, managing async execution, or working with the open source company
   operating system.
-version: 1.3.0
+version: 1.4.0
 metadata:
   openclaw:
     requires:
@@ -565,6 +565,7 @@ operately projects create_check_in \
   --project-id p1 \
   --status on_track \
   --description "# Progress\n\nCompleted design phase."
+  # Publish later instead: add --scheduled-at (see "Scheduling Posts")
 
 # List check-ins
 operately projects list_check_ins --project-id p1
@@ -572,6 +573,8 @@ operately projects list_check_ins --project-id p1
 # Acknowledge check-in
 operately projects acknowledge_check_in --id ci1
 ```
+
+**Editing a published check-in:** you can fully edit only the *latest* project check-in, and only within 72 hours of posting. Outside that window (or for any older check-in), `update_check_in` still saves `--description` but silently ignores `--status` — the call succeeds, so do not assume the status changed.
 
 ### Contributors
 
@@ -656,6 +659,7 @@ operately goals create_check_in \
   --status on_track \
   --due-date 2026-04-01 \
   --content "Making good progress on Q2 targets"
+  # Publish later instead: add --scheduled-at (see "Scheduling Posts")
 
 # List check-ins
 operately goals list_check_ins --goal-id g1
@@ -905,6 +909,7 @@ operately spaces create_discussion \
   --space-id s1 \
   --title "Q2 Planning" \
   --body "# Q2 Planning\n\nLet's discuss priorities."
+  # Publish later instead: add --scheduled-at (see "Scheduling Posts")
 
 # Space discussion from a markdown file
 operately spaces create_discussion \
@@ -932,6 +937,32 @@ operately spaces list_discussions --space-id s1
 operately projects list_discussions --project-id p1
 operately goals list_discussions --goal-id g1
 ```
+
+## Scheduling Posts
+
+Goal check-ins, project check-ins, and **space** discussions can be written now and published later. Add `--scheduled-at <datetime>` when creating them:
+
+- `operately goals create_check_in --scheduled-at ...`
+- `operately projects create_check_in --scheduled-at ...`
+- `operately spaces create_discussion --scheduled-at ...`
+
+Scheduling is not available for goal or project discussions.
+
+**Datetime format:** a full ISO-8601 timestamp *with a timezone offset*, and it must be in the future. A date alone (`2026-08-01`) or a time without an offset (`2026-08-01T09:00:00`) is rejected. Offsets are stored as UTC.
+
+```bash
+operately projects create_check_in \
+  --project-id p1 \
+  --status on_track \
+  --description "Weekly update" \
+  --scheduled-at 2026-08-01T09:00:00Z          # UTC
+  # or a local offset, e.g. --scheduled-at 2026-08-01T09:00:00-03:00
+```
+
+A scheduled item stays unpublished (`state: scheduled`) until its time. Before it publishes, use the matching update command (`goals update_check_in`, `projects update_check_in`, `spaces update_discussion`) to change it:
+
+- `--scheduled-at <new datetime>` reschedules it.
+- `--state published` publishes it now; `--state draft` turns it into a draft.
 
 ## Comments
 
