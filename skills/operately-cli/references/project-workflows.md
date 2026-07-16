@@ -390,6 +390,13 @@ operately projects update_retrospective \
 operately projects get_retrospective --project-id p1
 ```
 
+### Acknowledging Retrospective
+
+```bash
+# Reviewer only — authors cannot acknowledge their own. From list_assignments, use origin.id.
+operately projects acknowledge_retrospective --project-id p1
+```
+
 ## Project Permissions
 
 ### Updating Access Levels

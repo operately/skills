@@ -488,7 +488,7 @@ operately people list_assignments
 This returns assignments categorized into three groups:
 
 - **`due_soon`** - Items you own that are overdue, due today, or due soon
-- **`needs_review`** - Items where you are the reviewer (check-ins, goal updates) awaiting acknowledgment
+- **`needs_review`** - Items where you are the reviewer (check-ins, retrospectives) awaiting acknowledgment
 - **`upcoming`** - Items you own with future due dates
 
 Each category contains groups of assignments organized by their origin (project, goal, or space). Assignments include:
@@ -498,6 +498,7 @@ Each category contains groups of assignments organized by their origin (project,
 - **Projects** - Projects you own or are reviewing
 - **Goals** - Goals you own or are reviewing
 - **Check-ins** - Project and goal check-ins requiring your review
+- **Retrospectives** - Closed project/goal retrospectives requiring your review
 
 The response structure groups related items together and sorts by urgency, making it easy to prioritize your work. Items needing review show the author's name and what action is required.
 
@@ -677,6 +678,9 @@ operately goals close \
   --success achieved \
   --success-status achieved \
   --retrospective "# Retrospective\n\nWe exceeded our target."
+
+# Reviewer acknowledges retrospective (authors cannot acknowledge their own)
+operately goals acknowledge_retrospective --goal-id g1
 
 # Reopen goal
 operately goals reopen --id g1 --message "Reopening after new planning input."
