@@ -448,6 +448,9 @@ operately goals close \
   --success no \
   --success-status missed \
   --retrospective "# Lessons Learned\n\nMarket conditions changed significantly."
+
+# Reviewer acknowledges — authors cannot acknowledge their own. From list_assignments, use origin.id.
+operately goals acknowledge_retrospective --goal-id g1
 ```
 
 ## Common Patterns
