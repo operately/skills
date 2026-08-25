@@ -1,13 +1,14 @@
 ---
 name: operately-cli
 description: >
-  Manage Operately from the CLI: goals, OKRs, projects, tasks, milestones,
-  spaces, documents, discussions, check-ins, reviews, assignments, people,
-  permissions, and Docs & Files. Use when operating an Operately workspace,
-  automating startup/company operations, updating project status, tracking goal
-  progress, managing async execution, or working with the open source company
-  operating system.
-version: 1.4.0
+  Manage Operately from the CLI: goals, OKRs, projects, project templates,
+  tasks, milestones, spaces, documents, discussions, check-ins, reviews,
+  assignments, people, permissions, full-text search, document history, and
+  Docs & Files. Use when operating an Operately workspace, automating
+  startup/company operations, updating project status, tracking goal progress,
+  managing async execution, or working with the open source company operating
+  system.
+version: 1.9.0
 metadata:
   openclaw:
     requires:
@@ -72,6 +73,11 @@ Operate an Operately instance through the `operately` CLI.
 | List spaces | `operately spaces list` |
 | Create document | `operately documents create_document --space-id <id> --name "Guide" --content "# Guide"` |
 | List Docs & Files contents | `operately documents list_contents --space-id <id>` |
+| List project templates | `operately project_templates list --space-id <id>` |
+| Create project from template | `operately project_templates create_project --template-id <id> --space-id <id> --start-date <date> --name "..." --anonymous-access-level 0 --company-access-level 10 --space-access-level 70` |
+| Full-text search | `operately companies search --query "..."` |
+| Search Docs & Files | `operately documents search --space-id <id> --query "..."` |
+| Restore document version | `operately documents restore_document_version --document-id <id> --version-number <n>` |
 
 ## Verify CLI Is Installed
 
@@ -86,6 +92,8 @@ If this does not print the version number, the CLI is **not installed**. Stop an
 > The Operately CLI is not installed. Install it with `npm install -g @operately/operately-cli` and then re-run this task.
 
 Do **not** attempt to install the CLI on behalf of the user. Do **not** continue without a working CLI.
+
+This skill documents **Operately CLI 1.9.0** (`@operately/operately-cli`). If `operately --version` reports an older release, ask the user to run `npm update -g @operately/operately-cli` before template, search, or document-history workflows.
 
 Only after confirming the binary exists should you verify the session:
 
@@ -258,7 +266,7 @@ Examples:
 operately people get_me
 operately people update_picture --avatar-file path-to-avatar-file
 operately projects list
-operately goals create --name "Q2 Revenue Goal" --space-id s1
+operately goals create --name "Q2 Revenue Goal" --space-id s1 --anonymous-access-level 0 --company-access-level 10 --space-access-level 70
 operately tasks update_status --task-id t1 --type project --status.id done --status.label "Done" --status.color green --status.index 2 --status.value done --status.closed true
 operately documents create_file --space-id s1 --file path-to-file
 ```
@@ -306,6 +314,7 @@ operately notifications mark_many_as_read --ids n1 --ids n2
 **Nested objects** (dot-index notation):
 ```bash
 operately projects update_task_statuses \
+  --project-id p1 \
   --task-statuses.0.id ts1 \
   --task-statuses.0.label "To Do" \
   --task-statuses.1.id ts2 \
@@ -466,16 +475,19 @@ operately people get_me --verbose
 
 The CLI provides access to the external API across these namespaces:
 
-- **comments** - Comment management on resources
-- **companies** - Company settings, members, permissions
-- **documents** - Docs & Files: documents, files, links, folders (list, create, get, update, delete, publish, copy, move)
+- **comments** - Comment management on live resources
+- **companies** - Company settings, members, permissions, search
+- **documents** - Docs & Files: documents, files, links, folders, search, version history
 - **goals** - Goal management, check-ins, targets
 - **notifications** - Notification preferences and subscriptions
 - **people** - User and team member management, including profile picture updates
-- **projects** - Project management, milestones, check-ins
+- **project_templates** - Reusable project blueprints (library, plan, contributors, template Docs & Files)
+- **projects** - Project management, milestones, check-ins, contributors
 - **reactions** - Emoji reactions to content
 - **spaces** - Space (team/department) management
-- **tasks** - Task management across projects
+- **tasks** - Task management across projects and spaces
+
+The CLI also exposes a **kpis** namespace; this skill does not document KPI workflows.
 
 ## Assignments and Reviews
 
@@ -737,9 +749,29 @@ operately tasks update_milestone --task-id t1 --milestone-id m2
 operately tasks update_milestone_and_ordering \
   --task-id t1 \
   --milestone-id m2 \
-  --milestones-ordering-state.0.milestone-id m2 \
-  --milestones-ordering-state.0.ordering-state.0 t1
+  --index 0
 ```
+
+For template blueprint tasks, use `project_templates update_milestone_and_ordering` instead. See [Project Template Workflows](references/project-template-workflows.md).
+
+## Project Templates
+
+```bash
+# List templates in a space
+operately project_templates list --space-id s1
+
+# Create a project from a template
+operately project_templates create_project \
+  --template-id pt1 \
+  --space-id s1 \
+  --start-date 2026-09-01 \
+  --name "Q4 Launch" \
+  --anonymous-access-level 0 \
+  --company-access-level 10 \
+  --space-access-level 70
+```
+
+**See:** `references/project-template-workflows.md` for lifecycle, scheduling offsets, contributors, template Docs & Files, and live-vs-template routing.
 
 ## Spaces
 
@@ -783,19 +815,17 @@ operately spaces update_members_permissions \
 # List available tools
 operately spaces list_tools --space-id s1
 
-# Update enabled tools
+# Enable templates only (partial update)
 operately spaces update_tools \
   --space-id s1 \
-  --tools.tasks-enabled true \
-  --tools.discussions-enabled true \
-  --tools.resource-hub-enabled true
+  --tools.templates-enabled true
 ```
 
 ## Docs & Files
 
 See [Docs & Files Reference](references/docs-and-files.md) for detailed workflows.
 
-Every space and project has a Docs & Files hub. Scope hub-level commands with **`--space-id`** or **`--project-id`** (mutually exclusive). Do not look up a hub ID via `spaces list_tools` — pass the space or project ID directly.
+Every space, project, and goal has a Docs & Files hub. Scope hub-level commands with **`--space-id`**, **`--project-id`**, or **`--goal-id`** (mutually exclusive). Do not look up a hub ID via `spaces list_tools` — pass the space, project, or goal ID directly.
 
 For folder-scoped listing, **`--folder-id` alone** is enough (no space/project ID required).
 
@@ -845,10 +875,16 @@ operately documents create_document \
 operately documents update_document \
   --document-id d1 \
   --name "Updated Guide" \
-  --content "# Updated Content"
+  --content "# Updated Content" \
+  --expected-version 3
 
 # Publish draft
 operately documents publish_document --document-id d1
+
+# Version history
+operately documents list_document_versions --document-id d1
+operately documents get_document_version --document-id d1 --version-number 2
+operately documents restore_document_version --document-id d1 --version-number 2 --expected-current-version 5
 ```
 
 ### Links
@@ -970,6 +1006,8 @@ A scheduled item stays unpublished (`state: scheduled`) until its time. Before i
 
 ## Comments
 
+**Routing:** Use `comments/*` for live work (projects, goals, spaces, tasks, check-ins, hub docs/files/links). Use `project_templates create_comment`, `update_comment`, and `delete_comment` for comments on template blueprint content only.
+
 ```bash
 # Create comment
 operately comments create \
@@ -1029,6 +1067,10 @@ operately notifications unsubscribe \
 
 If `subscription_list` is missing from the `projects get` response, do not assume the project lacks one. It means `--include-subscription-list` was omitted and the field was not preloaded.
 
+### Notification Recipients on Mutations
+
+Many content mutations accept `--send-notifications-to-everyone` and repeated `--subscriber-ids` flags (check-ins, documents, discussions, goal close/reopen, etc.). Prefer targeted `--subscriber-ids` over notifying everyone.
+
 ## People
 
 ```bash
@@ -1069,7 +1111,11 @@ operately companies list
 # Get work map
 operately companies get_work_map
 
-# Global search
+# Full-text search (preferred)
+operately companies search --query "roadmap" --sort best_match
+
+# Quick/broad lookup
+operately companies quick_search --query "roadmap"
 operately companies global_search --query "roadmap"
 
 # Create member
@@ -1212,8 +1258,10 @@ This is the primary skill for Operately CLI operations. Future skills may includ
 ## References
 
 - [Project Workflows](references/project-workflows.md) - Project lifecycle and milestone management
+- [Project Template Workflows](references/project-template-workflows.md) - Reusable templates and live-vs-template routing
 - [Goal Workflows](references/goal-workflows.md) - OKR patterns and goal tracking
 - [Task Workflows](references/task-workflows.md) - Task management best practices for projects and spaces
 - [Space Workflows](references/space-workflows.md) - Space management, members, tools, and access control
-- [Docs & Files](references/docs-and-files.md) - Knowledge base organization
+- [Docs & Files](references/docs-and-files.md) - Knowledge base organization, search, and version history
 - [Collaboration Patterns](references/collaboration-patterns.md) - Team collaboration workflows
+- [Assignments and Reviews](references/assignments-and-reviews.md) - Assignments inbox and review workflows

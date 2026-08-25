@@ -49,6 +49,7 @@ Each assignment includes:
   - `project_task` - Task within a project
   - `space_task` - Task within a space
   - `goal` - Goal itself
+  - `project` - Project requiring review
 
 - **`role`** - Your relationship to the item:
   - `owner` - You are responsible for completing it

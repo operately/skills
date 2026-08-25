@@ -32,20 +32,21 @@ operately spaces create \
 # List available tools and their status
 operately spaces list_tools --space-id s1
 
-# Enable all tools
+# Enable project templates only (partial update — other tools unchanged)
+operately spaces update_tools \
+  --space-id s1 \
+  --tools.templates-enabled true
+
+# Enable all common tools
 operately spaces update_tools \
   --space-id s1 \
   --tools.tasks-enabled true \
   --tools.discussions-enabled true \
-  --tools.resource-hub-enabled true
-
-# Enable only specific tools
-operately spaces update_tools \
-  --space-id s1 \
-  --tools.tasks-enabled true \
-  --tools.discussions-enabled false \
-  --tools.resource-hub-enabled true
+  --tools.resource-hub-enabled true \
+  --tools.templates-enabled true
 ```
+
+When `templates_enabled` is true on a space, the template library is available via `operately project_templates list --space-id s1`. See [Project Template Workflows](project-template-workflows.md).
 
 **Note:** Docs & Files commands use `--space-id` directly. You do not need to look up a hub ID from `list_tools`.
 

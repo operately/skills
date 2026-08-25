@@ -495,11 +495,49 @@ operately companies grant_resource_access \
   --resources.1.access-level edit_access
 ```
 
-### Global Search
+### Global and Full-Text Search
 
 ```bash
+# Full-text search (preferred)
+operately companies search --query "roadmap" --sort best_match
+
+# Quick title/name lookup
+operately companies quick_search --query "roadmap"
+
+# Broad lookup across many resource types
 operately companies global_search --query "roadmap"
 ```
+
+Scoped Docs & Files search:
+
+```bash
+operately documents search --project-id p1 --query "spec"
+```
+
+### Notification Recipients on Content
+
+Many mutations accept notification recipient controls:
+
+```bash
+operately projects create_check_in \
+  --project-id p1 \
+  --status on_track \
+  --description "# Update" \
+  --send-notifications-to-everyone false \
+  --subscriber-ids u2 \
+  --subscriber-ids u3
+```
+
+Same flags work on document updates, discussions, goal close/reopen, and other content mutations. Use `--send-notifications-to-everyone` sparingly; prefer `--subscriber-ids` for targeted alerts.
+
+### Template vs Live Comments
+
+| Intent | Commands |
+| --- | --- |
+| Comment on live check-ins, tasks, docs, discussions | `operately comments create …` |
+| Comment on template blueprint content | `operately project_templates create_comment …` |
+
+See [Project Template Workflows](project-template-workflows.md) for template collaboration patterns.
 
 ### Activity Feed
 
@@ -624,12 +662,14 @@ Entity types must match exactly:
 # Wrong
 operately comments create \
   --entity-id ci1 \
-  --entity-type "check_in"  # ❌
+  --entity-type "check_in" \
+  --content "Example"
 
 # Right
 operately comments create \
   --entity-id ci1 \
-  --entity-type "project_check_in"  # ✅
+  --entity-type "project_check_in" \
+  --content "Example"
 ```
 
 ### Space Tools
