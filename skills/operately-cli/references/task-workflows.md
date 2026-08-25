@@ -125,14 +125,14 @@ operately tasks update_assignee \
 ### Finding Potential Assignees
 
 ```bash
-# For project tasks
+# For project tasks (--id is the project ID, not the task ID)
 operately tasks list_potential_assignees \
-  --id t1 \
+  --id p1 \
   --type project
 
-# For space tasks
+# For space tasks (--id is the space ID)
 operately tasks list_potential_assignees \
-  --id t2 \
+  --id s1 \
   --type space
 ```
 
@@ -548,12 +548,12 @@ operately tasks update_description \
 ```bash
 operately comments create \
   --entity-id t1 \
-  --entity-type "task" \
+  --entity-type "project_task" \
   --content "Started working on this. Will have it done by EOD."
 
 operately comments create \
   --entity-id t1 \
-  --entity-type "task" \
+  --entity-type "project_task" \
   --content "Blocked on API access. Need credentials from DevOps."
 ```
 
@@ -562,7 +562,7 @@ operately comments create \
 ```bash
 operately comments list \
   --entity-id t1 \
-  --entity-type "task"
+  --entity-type "project_task"
 ```
 
 ## Task Metrics and Reporting
