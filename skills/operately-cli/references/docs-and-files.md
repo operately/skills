@@ -616,7 +616,7 @@ operately documents create_document \
 
 ```bash
 operately companies search --query "onboarding" --sort best_match
-operately companies search --query "roadmap" --space-ids s1 --types document --sort most_recent
+operately companies search --query "roadmap" --space-ids s1 --types resource_hub_document --sort most_recent
 ```
 
 **Scoped Docs & Files search** (exactly one of `--space-id`, `--project-id`, or `--goal-id`):

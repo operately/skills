@@ -285,31 +285,37 @@ operately comments create \
   --entity-type "project_check_in" \
   --content "Great progress! The design phase looks solid."
 
-# Comment on goal check-in
+# Comment on goal check-in (API type: goal_update)
 operately comments create \
   --entity-id ci2 \
-  --entity-type "goal_check_in" \
+  --entity-type "goal_update" \
   --content "Concerned about the timeline. Can we discuss?"
 
-# Comment on task
+# Comment on project task
 operately comments create \
   --entity-id t1 \
-  --entity-type "task" \
+  --entity-type "project_task" \
   --content "I'll take this one. Should be done by EOD."
 
-# Comment on discussion
+# Comment on space task
+operately comments create \
+  --entity-id t2 \
+  --entity-type "space_task" \
+  --content "Picking this up tomorrow."
+
+# Comment on space discussion (message board post)
 operately comments create \
   --entity-id d1 \
-  --entity-type "discussion" \
+  --entity-type "message" \
   --content "I agree with option 1. Here's why..."
 ```
 
 Common entity types:
-- `project_check_in`
-- `goal_check_in`
-- `task`
-- `discussion`
-- `document`
+- `project_check_in`, `project_retrospective`, `project_discussion`
+- `goal_update`, `goal_discussion`
+- `project_task`, `space_task`
+- `message` (space discussions)
+- `resource_hub_document`, `resource_hub_file`, `resource_hub_link`
 - `milestone`
 
 ### Listing Comments
@@ -353,10 +359,10 @@ operately reactions create \
   --parent-type "project_check_in" \
   --emoji "❤️"
 
-# Celebrate
+# Celebrate a goal check-in
 operately reactions create \
-  --entity-id g1 \
-  --entity-type "goal" \
+  --entity-id ci2 \
+  --entity-type "goal_update" \
   --emoji "🎉"
 ```
 
