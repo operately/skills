@@ -28,7 +28,7 @@ npx skills add https://github.com/operately/skills --skill operately-cli
 
 | Skill | Description |
 | --- | --- |
-| **operately-cli** | Manage Operately goals, projects, tasks, check-ins, and team operations from the CLI |
+| **operately-cli** | Manage Operately goals, projects, tasks, project templates, Docs & Files, search, check-ins, and team operations from the CLI |
 
 ## Maintainers
 

@@ -6,7 +6,7 @@ Docs & Files is the knowledge base within spaces and projects. Teams organize do
 
 **What is Docs & Files?**
 
-Each space and project has a Docs & Files hub that provides:
+Each space, project, and goal has a Docs & Files hub that provides:
 - Central location for team documentation
 - Hierarchical folder organization
 - Document management (markdown)
@@ -15,7 +15,7 @@ Each space and project has a Docs & Files hub that provides:
 - Access control inherited from the parent space or project
 
 **Key characteristics:**
-- One Docs & Files hub per space or project
+- One Docs & Files hub per space, project, or goal
 - Nested folder hierarchy (unlimited depth, but keep it shallow for usability)
 - Documents, files, and links can live in folders
 - Markdown support for documents
@@ -23,7 +23,7 @@ Each space and project has a Docs & Files hub that provides:
 
 ## Scope Rules
 
-Hub-scoped create and list commands require **`--space-id`** or **`--project-id`** (mutually exclusive — provide one, not both).
+Hub-scoped create and list commands require **`--space-id`**, **`--project-id`**, or **`--goal-id`** (mutually exclusive — provide one, not both).
 
 ```bash
 # Space-scoped
@@ -31,6 +31,9 @@ operately documents create_document --space-id s1 --name "Guide" --content "# Gu
 
 # Project-scoped
 operately documents create_document --project-id p1 --name "Spec" --content "# Spec"
+
+# Goal-scoped
+operately documents create_document --goal-id g1 --name "Playbook" --content "# Playbook"
 ```
 
 **Folder-scoped listing** works with **`--folder-id` alone** — no space or project ID needed:
@@ -609,13 +612,53 @@ operately documents create_document \
 
 ### Searching Content
 
-Use the company global search to find documents and links:
+**Full-text company search** (preferred for content discovery):
+
+```bash
+operately companies search --query "onboarding" --sort best_match
+operately companies search --query "roadmap" --space-ids s1 --types document --sort most_recent
+```
+
+**Scoped Docs & Files search** (exactly one of `--space-id`, `--project-id`, or `--goal-id`):
+
+```bash
+operately documents search --space-id s1 --query "onboarding"
+operately documents search --goal-id g1 --query "metrics"
+```
+
+**Quick/broad lookup** (compatibility; includes discussions, folders, documents, files, links):
 
 ```bash
 operately companies global_search --query "onboarding"
+operately companies quick_search --query "roadmap"
 ```
 
-This searches across all Docs & Files hubs, documents, and links in the company.
+For template blueprint resources, use `project_templates` commands — not live `documents/*`. See [Project Template Workflows](project-template-workflows.md).
+
+### Document Version History
+
+```bash
+# List versions
+operately documents list_document_versions --document-id d1
+
+# Read a specific version
+operately documents get_document_version --document-id d1 --version-number 3
+
+# Restore a previous version
+operately documents restore_document_version --document-id d1 --version-number 3 --expected-current-version 5
+```
+
+When updating a document, pass `--expected-version` to detect concurrent edits:
+
+```bash
+operately documents update_document \
+  --document-id d1 \
+  --name "Updated Guide" \
+  --content "# Updated\n\nNew content." \
+  --expected-version 5
+```
+
+If another edit landed first, the CLI returns a version conflict — re-fetch the document and retry.
 
 ### Legacy CLI Commands (CLI ≤ 1.6)
 

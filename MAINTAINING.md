@@ -27,12 +27,22 @@ dist/<name>-<version>-clawhub.zip
 
 The packager is deterministic: it sorts files, normalizes timestamps and permissions, applies `.clawhubignore`, validates that packaged files are UTF-8 text, and prints a SHA-256 checksum. Running the same command twice against the same source should print the same checksum.
 
+## Validate CLI Examples
+
+Before packaging, validate that skill command examples match the Operately CLI catalog:
+
+```bash
+node scripts/check-skill-examples.mjs
+```
+
+The checker reads `../operately/cli/src/generated/api-catalog.json` by default. Override with `OPERATELY_CATALOG_PATH` if needed.
+
 ## Verify the Package
 
 Inspect the archive before publishing:
 
 ```bash
-unzip -l dist/operately-cli-1.0.0-clawhub.zip
+unzip -l dist/operately-cli-1.9.0-clawhub.zip
 ```
 
 Expected contents:
