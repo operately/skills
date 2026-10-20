@@ -25,7 +25,7 @@ Items you own that require immediate attention:
 - **Due soon** - Due within the next few days
 
 ### 2. `needs_review`
-Items where you are the reviewer and need to provide acknowledgment:
+Items assigned to you for acknowledgment:
 - Project check-ins awaiting review
 - Goal updates requiring acknowledgment
 - Project and goal retrospectives awaiting acknowledgment

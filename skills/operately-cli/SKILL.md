@@ -1,14 +1,14 @@
 ---
 name: operately-cli
 description: >
-  Manage Operately from the CLI: goals, OKRs, projects, project templates,
+  Manage Operately from the CLI: goals, OKRs, KPIs, projects, project templates,
   tasks, milestones, spaces, documents, discussions, check-ins, reviews,
   assignments, people, permissions, full-text search, document history, and
   Docs & Files. Use when operating an Operately workspace, automating
   startup/company operations, updating project status, tracking goal progress,
   managing async execution, or working with the open source company operating
   system.
-version: 1.9.0
+version: 1.10.0
 metadata:
   openclaw:
     requires:
@@ -323,7 +323,7 @@ operately projects update_task_statuses \
 
 **Markdown content:**
 
-Many commands accept markdown content (documents, descriptions, check-ins, discussions). For anything beyond a single short sentence, **use file input** (`--<field>-file <path>`) instead of inline strings. File input preserves formatting perfectly without shell escaping issues.
+Many commands accept markdown content (documents, descriptions, check-ins, discussions). For anything beyond a single short sentence, **use file input** (`--<field>-file <path>`) instead of inline strings. File input avoids shell escaping issues; content is converted to the supported rich-text format. For task lists, tables, and conversion limits, read [Docs & Files](references/docs-and-files.md#markdown-in-documents).
 
 **Recommended: file input for multiline content**
 
@@ -478,7 +478,8 @@ The CLI provides access to the external API across these namespaces:
 - **comments** - Comment management on live resources
 - **companies** - Company settings, members, permissions, search
 - **documents** - Docs & Files: documents, files, links, folders, search, version history
-- **goals** - Goal management, check-ins, targets
+- **goals** - Goal management, check-ins, targets, checklist items
+- **kpis** - Metrics, logged values, and chart annotations
 - **notifications** - Notification preferences and subscriptions
 - **people** - User and team member management, including profile picture updates
 - **project_templates** - Reusable project blueprints (library, plan, contributors, template Docs & Files)
@@ -486,8 +487,6 @@ The CLI provides access to the external API across these namespaces:
 - **reactions** - Emoji reactions to content
 - **spaces** - Space (team/department) management
 - **tasks** - Task management across projects and spaces
-
-The CLI also exposes a **kpis** namespace; this skill does not document KPI workflows.
 
 ## Assignments and Reviews
 
@@ -663,6 +662,10 @@ operately goals update_target_value \
   --value 75000
 ```
 
+### Goal Checklists
+
+Read [Goal Workflows](references/goal-workflows.md#checklist-items) to read, add, rename, toggle, or delete goal checklist items. These are separate from Markdown checkboxes.
+
 ### Goal Check-ins
 
 ```bash
@@ -681,6 +684,8 @@ operately goals list_check_ins --goal-id g1
 operately goals acknowledge_check_in --id ci1
 ```
 
+Goal check-in and retrospective acknowledgment through the CLI requires edit access and excludes the author. See [Goal Workflows](references/goal-workflows.md#acknowledging-check-ins).
+
 ### Goal Lifecycle
 
 ```bash
@@ -691,12 +696,16 @@ operately goals close \
   --success-status achieved \
   --retrospective "# Retrospective\n\nWe exceeded our target."
 
-# Reviewer acknowledges retrospective (authors cannot acknowledge their own)
+# Acknowledge retrospective (authors cannot acknowledge their own)
 operately goals acknowledge_retrospective --goal-id g1
 
 # Reopen goal
 operately goals reopen --id g1 --message "Reopening after new planning input."
 ```
+
+## KPIs
+
+Read [KPI Workflows](references/kpi-workflows.md) when tracking metrics, logging or correcting values, or annotating charts.
 
 ## Tasks
 
@@ -825,9 +834,9 @@ operately spaces update_tools \
 
 See [Docs & Files Reference](references/docs-and-files.md) for detailed workflows.
 
-Every space, project, and goal has a Docs & Files hub. Scope hub-level commands with **`--space-id`**, **`--project-id`**, or **`--goal-id`** (mutually exclusive). Do not look up a hub ID via `spaces list_tools` — pass the space, project, or goal ID directly.
+Every space, project, and goal has a Docs & Files hub. Ordinary create and list commands accept exactly one of **`--space-id`**, **`--project-id`**, or **`--goal-id`**. To find your drafts across folders, use `documents list_drafts --resource-hub-id <id>`; see [Find your drafts](references/docs-and-files.md#find-your-drafts) for the hub lookup.
 
-For folder-scoped listing, **`--folder-id` alone** is enough (no space/project ID required).
+For folder-scoped listing, **`--folder-id` alone** is enough (no space, project, or goal ID required).
 
 ### Folder Management
 
@@ -914,6 +923,9 @@ operately documents create_link \
 operately documents create_file \
   --space-id s1 \
   --file ./report.pdf
+
+# Upload file to a goal
+operately documents create_file --goal-id g1 --file ./report.pdf
 
 # Upload file into a folder
 operately documents create_file \
@@ -1092,12 +1104,17 @@ operately people update \
   --title "Senior Engineer" \
   --manager-id u2
 
+# Change your own language (use your ID from get_me)
+operately people update --id u1 --language pt-BR
+
 # Set profile picture from a local image
 operately people update_picture --avatar-file ./avatar.png
 
 # Remove profile picture
 operately people update_picture --clear
 ```
+
+Language values are `en`, `pt-BR`, `de`, `fr`, `es`, and `ru`. This preference applies to your profile in the current company.
 
 ## Company
 
@@ -1259,7 +1276,8 @@ This is the primary skill for Operately CLI operations. Future skills may includ
 
 - [Project Workflows](references/project-workflows.md) - Project lifecycle and milestone management
 - [Project Template Workflows](references/project-template-workflows.md) - Reusable templates and live-vs-template routing
-- [Goal Workflows](references/goal-workflows.md) - OKR patterns and goal tracking
+- [Goal Workflows](references/goal-workflows.md) - OKR patterns, targets, and goal checklists
+- [KPI Workflows](references/kpi-workflows.md) - Metrics, values, and chart annotations
 - [Task Workflows](references/task-workflows.md) - Task management best practices for projects and spaces
 - [Space Workflows](references/space-workflows.md) - Space management, members, tools, and access control
 - [Docs & Files](references/docs-and-files.md) - Knowledge base organization, search, and version history
