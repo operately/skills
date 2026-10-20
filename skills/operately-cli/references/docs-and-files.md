@@ -1,6 +1,6 @@
 # Docs & Files
 
-Docs & Files is the knowledge base within spaces and projects. Teams organize documents, files, links, and folders in a hierarchical structure.
+Docs & Files is the knowledge base within spaces, projects, and goals. Teams organize documents, files, links, and folders in a hierarchical structure.
 
 ## Concept
 
@@ -12,7 +12,7 @@ Each space, project, and goal has a Docs & Files hub that provides:
 - Document management (markdown)
 - File attachments (binary uploads)
 - Link collection
-- Access control inherited from the parent space or project
+- Access control inherited from the parent space, project, or goal
 
 **Key characteristics:**
 - One Docs & Files hub per space, project, or goal
@@ -23,7 +23,7 @@ Each space, project, and goal has a Docs & Files hub that provides:
 
 ## Scope Rules
 
-Hub-scoped create and list commands require **`--space-id`**, **`--project-id`**, or **`--goal-id`** (mutually exclusive — provide one, not both).
+Ordinary hub-scoped create and list commands require exactly one of **`--space-id`**, **`--project-id`**, or **`--goal-id`**.
 
 ```bash
 # Space-scoped
@@ -36,13 +36,13 @@ operately documents create_document --project-id p1 --name "Spec" --content "# S
 operately documents create_document --goal-id g1 --name "Playbook" --content "# Playbook"
 ```
 
-**Folder-scoped listing** works with **`--folder-id` alone** — no space or project ID needed:
+**Folder-scoped listing** works with **`--folder-id` alone** — no space, project, or goal ID needed:
 
 ```bash
 operately documents list_contents --folder-id f1
 ```
 
-**Do not** resolve a hub ID via `spaces list_tools`. Pass the space or project ID directly on `documents/*` commands.
+Pass the space, project, or goal ID directly for ordinary create and list operations. `documents list_drafts` is an exception: it requires `--resource-hub-id` (see [Find your drafts](#find-your-drafts)).
 
 ## Folder Operations
 
@@ -370,6 +370,26 @@ operately documents list_contents \
 
 If `comments_count` or `children_count` is missing from the response, treat that as "metadata not requested" unless the matching include flag was passed.
 
+### Find Your Drafts
+
+`list_drafts` returns your drafts across all live folders in one hub, including drafts outside the folder you are browsing.
+
+```bash
+# Space hub: read the ID from tools.resource_hubs
+operately spaces list_tools --space-id s1
+
+# Project hub: read resource_hub.id from the returned project
+operately projects get --id p1 --include-resource-hub
+
+# Goal hub: read resource_hub.id from the returned goal
+operately goals get --id g1 --include-resource-hub
+
+# Use the hub ID from the relevant response
+operately documents list_drafts --resource-hub-id h1
+```
+
+The response contains `draft_nodes`. This lists your drafts, not every editor's drafts.
+
 ## Project-Scoped Docs & Files
 
 Projects have their own Docs & Files hub. Use `--project-id` instead of `--space-id`:
@@ -388,6 +408,21 @@ operately documents create_document \
 operately documents create_file \
   --project-id p1 \
   --file ./spec.pdf
+```
+
+## Goal-Scoped Docs & Files
+
+Use `--goal-id` to create documents, files, links, and folders in a goal's hub, or to list its contents:
+
+```bash
+operately documents list_contents --goal-id g1
+
+operately documents create_document \
+  --goal-id g1 \
+  --name "Goal plan" \
+  --content-file ./goal-plan.md
+
+operately documents create_file --goal-id g1 --file ./report.pdf
 ```
 
 ## Common Patterns
@@ -508,9 +543,9 @@ operately documents create_document \
 
 ## Gotchas
 
-### One Hub per Space or Project
+### One Hub per Space, Project, or Goal
 
-Each space and each project has one Docs & Files hub. Scope commands with `--space-id` or `--project-id` — do not look up hub IDs.
+Each space, project, and goal has one Docs & Files hub. Ordinary create and list commands accept `--space-id`, `--project-id`, or `--goal-id`; `list_drafts` requires the hub ID.
 
 ### Folder Hierarchy Depth
 
@@ -580,14 +615,15 @@ The `--type` parameter for links is required. Valid values:
 
 ### Markdown in Documents
 
-Documents support full markdown including:
-- Headings (`# H1`, `## H2`, etc.)
-- Lists (`-` or `1.`)
-- Links (`[text](url)`)
-- Code blocks (` ``` `)
-- Bold (`**text**`) and italic (`*text*`)
+Markdown fields support headings, inline formatting, links, lists, blockquotes, code, task lists, and pipe tables. These rules apply across documents, descriptions, discussions, check-ins, and comments. Content is converted to Operately rich text; arbitrary HTML and Markdown extensions may not be preserved.
 
-Use markdown for rich, readable documentation. For larger documents, use `--content-file <path>` to load markdown from disk:
+- Markdown checkboxes stay in the rich text; they do not create project tasks or goal checklist items.
+- Table cells support inline formatting, links, escaped pipes (`\|`), and `<br>` line breaks. Short rows are padded; extra cells beyond the header's column count cause an input error.
+- Table widths and alignment are not preserved. Images inside cells become labeled links.
+
+Table and task-list input require support in both the CLI and server. CLI 1.9.0 lacks this input support.
+
+For larger documents, use a file:
 
 ```bash
 operately documents create_document \
