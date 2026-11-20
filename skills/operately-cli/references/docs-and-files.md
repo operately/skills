@@ -15,7 +15,7 @@ Each space, project, and goal has a Docs & Files hub that provides:
 - Access control inherited from the parent space, project, or goal
 
 **Key characteristics:**
-- One Docs & Files hub per space, project, or goal
+- A space can have several named hubs. Projects and goals each have one.
 - Nested folder hierarchy (unlimited depth, but keep it shallow for usability)
 - Documents, files, and links can live in folders
 - Markdown support for documents
@@ -23,7 +23,7 @@ Each space, project, and goal has a Docs & Files hub that provides:
 
 ## Scope Rules
 
-Ordinary hub-scoped create and list commands require exactly one of **`--space-id`**, **`--project-id`**, or **`--goal-id`**.
+Use `--space-id` for a space’s default Resource Hub, `--project-id` for a project’s Resource Hub, or `--goal-id` for a goal’s Resource Hub. To select a specific Resource Hub directly, use `--resource-hub-id`.
 
 ```bash
 # Space-scoped
@@ -42,7 +42,16 @@ operately documents create_document --goal-id g1 --name "Playbook" --content "# 
 operately documents list_contents --folder-id f1
 ```
 
-Pass the space, project, or goal ID directly for ordinary create and list operations. `documents list_drafts` is an exception: it requires `--resource-hub-id` (see [Find your drafts](#find-your-drafts)).
+### Resource Hubs in a space
+
+```bash
+operately documents list_hubs --space-id s1
+operately documents create_hub --space-id s1 --name "Research"
+operately documents rename_hub --resource-hub-id h1 --new-name "Customer research"
+operately documents create_file --resource-hub-id h1 --file ./report.pdf
+```
+
+Use `documents delete_hub --resource-hub-id <id>` to delete an empty, non-default Resource Hub.
 
 ## Folder Operations
 
@@ -375,8 +384,8 @@ If `comments_count` or `children_count` is missing from the response, treat that
 `list_drafts` returns your drafts across all live folders in one hub, including drafts outside the folder you are browsing.
 
 ```bash
-# Space hub: read the ID from tools.resource_hubs
-operately spaces list_tools --space-id s1
+# Choose the space’s Resource Hub by name
+operately documents list_hubs --space-id s1
 
 # Project hub: read resource_hub.id from the returned project
 operately projects get --id p1 --include-resource-hub
@@ -543,10 +552,6 @@ operately documents create_document \
 
 ## Gotchas
 
-### One Hub per Space, Project, or Goal
-
-Each space, project, and goal has one Docs & Files hub. Ordinary create and list commands accept `--space-id`, `--project-id`, or `--goal-id`; `list_drafts` requires the hub ID.
-
 ### Folder Hierarchy Depth
 
 There is no technical limit on folder depth, but keep it shallow (3–4 levels max) for usability:
@@ -655,10 +660,10 @@ operately companies search --query "onboarding" --sort best_match
 operately companies search --query "roadmap" --space-ids s1 --types resource_hub_document --sort most_recent
 ```
 
-**Scoped Docs & Files search** (exactly one of `--space-id`, `--project-id`, or `--goal-id`):
+**Search a specific Resource Hub or a parent’s default Resource Hub**
 
 ```bash
-operately documents search --space-id s1 --query "onboarding"
+operately documents search --resource-hub-id h1 --query "onboarding"
 operately documents search --goal-id g1 --query "metrics"
 ```
 
