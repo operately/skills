@@ -19,6 +19,7 @@ const CUSTOM_ENDPOINTS = [
       { name: "space_id", optional: true, type: { kind: "named", name: "id" } },
       { name: "project_id", optional: true, type: { kind: "named", name: "id" } },
       { name: "goal_id", optional: true, type: { kind: "named", name: "id" } },
+      { name: "resource_hub_id", optional: true, type: { kind: "named", name: "id" } },
       { name: "file", optional: false, type: { kind: "named", name: "path" } },
       { name: "folder_id", optional: true, type: { kind: "named", name: "id" } },
       { name: "name", optional: true, type: { kind: "named", name: "string" } },

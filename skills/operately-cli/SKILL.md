@@ -8,7 +8,7 @@ description: >
   startup/company operations, updating project status, tracking goal progress,
   managing async execution, or working with the open source company operating
   system.
-version: 1.10.0
+version: 1.11.0
 metadata:
   openclaw:
     requires:
@@ -62,6 +62,7 @@ Operate an Operately instance through the `operately` CLI.
 | Set profile picture | `operately people update_picture --avatar-file ./avatar.png` |
 | Remove profile picture | `operately people update_picture --clear` |
 | Upload file to Docs & Files | `operately documents create_file --space-id <id> --file ./report.pdf` |
+| List my open tasks | `operately people list_my_tasks` |
 | List my assignments | `operately people list_assignments` |
 | List projects | `operately projects list` |
 | Get project | `operately projects get --id <id> --include-space` |
@@ -93,7 +94,7 @@ If this does not print the version number, the CLI is **not installed**. Stop an
 
 Do **not** attempt to install the CLI on behalf of the user. Do **not** continue without a working CLI.
 
-This skill documents **Operately CLI 1.9.0** (`@operately/operately-cli`). If `operately --version` reports an older release, ask the user to run `npm update -g @operately/operately-cli` before template, search, or document-history workflows.
+This skill covers **Operately CLI 1.11.0**. For 1.11 commands, update an older CLI with `npm update -g @operately/operately-cli`.
 
 Only after confirming the binary exists should you verify the session:
 
@@ -506,9 +507,8 @@ Each category contains groups of assignments organized by their origin (project,
 
 - **Milestones** - Project milestones you own
 - **Tasks** - Project and space tasks assigned to you
-- **Projects** - Projects you own or are reviewing
-- **Goals** - Goals you own or are reviewing
-- **Check-ins** - Project and goal check-ins requiring your review
+- **KPI updates** - Metrics due for an update
+- **Check-ins** - Project check-ins and goal updates to write or review
 - **Retrospectives** - Closed project/goal retrospectives requiring your review
 
 The response structure groups related items together and sorts by urgency, making it easy to prioritize your work. Items needing review show the author's name and what action is required.
@@ -709,6 +709,8 @@ Read [KPI Workflows](references/kpi-workflows.md) when tracking metrics, logging
 
 ## Tasks
 
+See [Task boards](references/task-workflows.md#task-boards) to choose a space board, manage its workflow, or archive tasks.
+
 ### Create Task
 
 ```bash
@@ -834,7 +836,7 @@ operately spaces update_tools \
 
 See [Docs & Files Reference](references/docs-and-files.md) for detailed workflows.
 
-Every space, project, and goal has a Docs & Files hub. Ordinary create and list commands accept exactly one of **`--space-id`**, **`--project-id`**, or **`--goal-id`**. To find your drafts across folders, use `documents list_drafts --resource-hub-id <id>`; see [Find your drafts](references/docs-and-files.md#find-your-drafts) for the hub lookup.
+`--space-id` selects the space’s default Resource Hub. Use `documents list_hubs --space-id <id>` to find another Resource Hub and pass its `--resource-hub-id`. Projects and goals have one Resource Hub each.
 
 For folder-scoped listing, **`--folder-id` alone** is enough (no space, project, or goal ID required).
 
@@ -1138,8 +1140,7 @@ operately companies global_search --query "roadmap"
 # Create member
 operately companies create_member \
   --full-name "John Doe" \
-  --email "john@example.com" \
-  --title "Engineer"
+  --email "john@example.com"
 ```
 
 ## Help System

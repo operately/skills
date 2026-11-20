@@ -42,7 +42,7 @@ The checker reads `../operately/cli/src/generated/api-catalog.json` by default. 
 Inspect the archive before publishing:
 
 ```bash
-unzip -l dist/operately-cli-1.9.0-clawhub.zip
+unzip -l dist/operately-cli-1.11.0-clawhub.zip
 ```
 
 Expected contents:

@@ -287,11 +287,9 @@ operately goals list_check_ins --goal-id g1
 # Get specific check-in
 operately goals get_check_in --id ci1
 
-# Update check-in
+# Edit the content and keep the current due date and status
 operately goals update_check_in \
   --id ci1 \
-  --due-date 2026-04-01 \
-  --status on_track \
   --content "# Updated Status\n\nRevised after team discussion."
 ```
 

@@ -439,8 +439,7 @@ operately notifications mark_all_as_read
 ```bash
 operately companies create_member \
   --full-name "John Doe" \
-  --email "john@example.com" \
-  --title "Senior Engineer"
+  --email "john@example.com"
 ```
 
 **Create admin:**
